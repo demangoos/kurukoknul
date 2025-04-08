@@ -1,0 +1,31 @@
+name: Kernel Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout kernel source
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y bc bison cpio curl flex git gnupg \
+          libssl-dev libelf-dev libncurses-dev lzop python3 unzip \
+          zip build-essential gcc clang wget rsync aria2 tar xz-utils
+
+    - name: Set up build script permissions
+      run: chmod +x build.sh
+
+    - name: Build the kernel
+      run: ./build.sh
+
+    - name: Upload output zip
+      uses: actions/upload-artifact@v3
+      with:
+        name: kernel-output
+        path: ~/XenoSensei-*.zip
