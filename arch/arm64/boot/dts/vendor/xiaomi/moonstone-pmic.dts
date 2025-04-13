@@ -108,14 +108,19 @@
 		pinctrl-0 = <&bq25890_int_gpio &bq25890_en_gpio>;
 		pinctrl-names = "default";
 		reg = <0x6a>;
-		ti,battery-regulation-voltage = <0x43e6d0>;
-		ti,boost-max-current = <0x192d50>;
-		ti,boost-voltage = <0x4c4b40>;
-		ti,charge-current = <0x2dc6c0>;
-		ti,minimum-sys-voltage = <0x36ee80>;
-		ti,precharge-current = <0x1f400>;
-		ti,termination-current = <0x30d40>;
-		ti,thermal-regulation-threshold = <0x78>;
+		ti,charge-current = <5000000>;           // Set to 5A
+		ti,battery-regulation-voltage = <4460000>; // 4.46V
+		ti,termination-current = <200000>;       // 200mA
+		ti,minimum-sys-voltage = <3600000>;      // 3.6V
+		ti,boost-voltage = <5000000>;           // 5V
+		ti,boost-max-current = <1650000>;       // 1.65A
+		
+		// Add new properties
+		ti,fast-charge-current-max = <6000000>; // 6A max
+		ti,input-current-limit = <3000000>;     // 3A input
+		ti,charging-timeout = <12>;             // 12 hours
+		ti,soc-threshold-low = <70>;            // Below 70% fast charge
+		ti,soc-threshold-high = <90>;           // Above 90% taper charge
 	};
 
 	sm5602@71 {
@@ -229,7 +234,7 @@
 		ln8000_charger,bat-ovp-alarm-threshold = <0x11ad>;
 		ln8000_charger,bat-ovp-threshold = <0x11c6>;
 		ln8000_charger,bus-ocp-alarm-threshold = <0xdac>;
-		ln8000_charger,bus-ocp-threshold = <0xea6>;
+		ln8000_charger,bus-ocp-threshold = <0x1388>;
 		ln8000_charger,bus-ovp-alarm-threshold = <0x2af8>;
 		ln8000_charger,bus-ovp-threshold = <0x32c8>;
 		ln8000_charger,ext_ovp_ctrl = <0x00>;
@@ -252,20 +257,27 @@
 		reg = <0x66>;
 		sc,sc8551,ac-ovp-threshold = <0x0d>;
 		sc,sc8551,bat-ocp-alarm-threshold = <0x1d4c>;
-		sc,sc8551,bat-ocp-threshold = <0x1f40>;
+		sc,sc8551,bat-ocp-threshold = <8000>;    // 8A
 		sc,sc8551,bat-ovp-alarm-threshold = <0x1130>;
 		sc,sc8551,bat-ovp-threshold = <0x11df>;
 		sc,sc8551,bat-therm-disable = <0x00>;
 		sc,sc8551,bat-therm-threshold = <0x15>;
 		sc,sc8551,bat-ucp-alarm-threshold = <0x7d0>;
 		sc,sc8551,bus-ocp-alarm-threshold = <0xdac>;
-		sc,sc8551,bus-ocp-threshold = <0xea6>;
+		sc,sc8551,bus-ocp-threshold = <5000>;    // 5A
 		sc,sc8551,bus-ovp-alarm-threshold = <0x2af8>;
 		sc,sc8551,bus-ovp-threshold = <0x2ee0>;
 		sc,sc8551,bus-therm-disable = <0x00>;
 		sc,sc8551,bus-therm-threshold = <0x15>;
 		sc,sc8551,die-therm-threshold = <0x7d>;
 		sc,sc8551,sense-resistor-mohm = <0x05>;
+
+		// Add new properties
+		sc,sc8551,bat-ucp-threshold = <2000>;    // 2A min
+		sc,sc8551,ac-protection-enable;
+		sc,sc8551,bus-protection-enable;
+		sc,sc8551,charge-mode = <2>;             // Fast charge mode
+		sc,sc8551,wdt-timer = <1>;               // 1s watchdog
 	};
 
 	rt1711h@4e {
@@ -344,15 +356,41 @@
 		io-channel-names = "typec_cc_orientation", "typec_mode";
 		io-channels = <&bq25890_chg 0x03>,
 			<&bq25890_chg 0x01>;
+
+		rt,pd_params {
+			pd,source-pdo-size = <1>;
+			pd,source-pdo-data = <0x019096>;    // 5V/3A
+			pd,sink-pdo-size = <4>;             // Support 4 PDOs
+			pd,sink-pdo-data = <0x019096        // 5V/3A
+							   0x029096        // 9V/3A
+							   0x039096        // 12V/3A
+							   0x049096>;      // 15V/3A
+			
+			pd,max-voltage-mv = <12000>;        // 12V max
+			pd,max-current-ma = <6000>;         // 6A max
+			pd,operating-current-ma = <3000>;   // 3A operation
+		};
 	};
 
 	charger-manager {
 		#io-channel-cells = <1>;
 		compatible = "qcom,wt_chg";
-		qcom,batt_iterm = <0x3e800>;
-		qcom,fcc-max-ua = <0xbd3580>;
-		qcom,fv-max-uv = <0x4434f0>;
-		status = "okay";
+		qcom,fcc-max-ua = <6000000>;            // 6A max
+		qcom,fv-max-uv = <4460000>;            // 4.46V
+		qcom,batt_iterm = <200000>;            // 200mA termination
+		
+		// Add new properties
+		qcom,step-chg-ranges = <0  70  6000000  4200000    100000
+							   71  90  3000000  4400000    100000
+							   91  100 1000000  4460000    50000>;
+		qcom,jeita-fcc-ranges = <0   50   1000000
+								51  100  2000000
+								101 350  6000000
+								351 480  3000000
+								481 600  1000000>;
+		qcom,thermal-mitigation = <6000000 5000000 4500000 4000000 
+								 3500000 3000000 2500000 2000000
+								 1500000 1000000 500000 0>;
 	};
 
 	onewire_gpio {
@@ -393,6 +431,10 @@
 		io-channels = <&bq25890_chg 0x7f>,
 			<&bq25890_chg 0x80>;
 		status = "okay";
+		qcom,min-ilim-ua = <2000000>;          // 2A min input
+		qcom,max-ilim-ua = <6000000>;          // 6A max input
+		qcom,min-vbat-for-cp = <3600000>;      // 3.6V min battery
+		qcom,cp-sec-enable;                     // Enable secondary charger
 	};
 };
 

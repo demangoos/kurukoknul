@@ -172,6 +172,19 @@ EXPORT_SYMBOL_GPL(arch_set_max_freq_scale);
  * - set policies transition latency
  * - policy->cpus with all possible CPUs
  */
+
+ static bool is_android_normal_boot(void)
+ {
+ #ifdef CONFIG_ANDROID
+	 // Tidak perlu deklarasi ulang, langsung pakai saja
+	 if (strstr(saved_command_line, "androidboot.mode=recovery"))
+		 return false;
+ #endif
+	 return true;
+ }
+
+
+
 void cpufreq_generic_init(struct cpufreq_policy *policy,
 		struct cpufreq_frequency_table *table,
 		unsigned int transition_latency)
@@ -2341,13 +2354,28 @@ static void cpufreq_stop_governor(struct cpufreq_policy *policy)
 
 static void cpufreq_governor_limits(struct cpufreq_policy *policy)
 {
-	if (cpufreq_suspended || !policy->governor)
-		return;
+    unsigned int min_freq;
 
-	pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
+    if (cpufreq_suspended || !policy->governor)
+        return;
 
-	if (policy->governor->limits)
-		policy->governor->limits(policy);
+    pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
+
+    // MODE ANDROID NORMAL - BOOST MINIMUM FREQ UNTUK SMOOTHNESS
+    if (is_android_normal_boot()) {
+        // Boost minimum freq ke 50% dari max untuk smoothness gaming
+        min_freq = policy->cpuinfo.max_freq / 2; // Bisa tweak ke 40%, 60%, dll
+        pr_info("cpufreq: Smoothness mode ON (min_freq forced to %u kHz)\n", min_freq);
+    } else {
+        // Di recovery/TWRP, tetap ke min freq asli (hemat)
+        min_freq = policy->cpuinfo.min_freq;
+        pr_info("cpufreq: Recovery mode detected, min_freq as default (%u kHz)\n", min_freq);
+    }
+
+    policy->min = max(policy->min, min_freq);
+
+    if (policy->governor->limits)
+        policy->governor->limits(policy);
 }
 
 int cpufreq_register_governor(struct cpufreq_governor *governor)
@@ -2824,13 +2852,15 @@ EXPORT_SYMBOL_GPL(cpufreq_unregister_driver);
 
 static int __init cpufreq_core_init(void)
 {
-	if (cpufreq_disabled())
-		return -ENODEV;
+    if (cpufreq_disabled())
+        return -ENODEV;
 
-	cpufreq_global_kobject = kobject_create_and_add("cpufreq", &cpu_subsys.dev_root->kobj);
-	BUG_ON(!cpufreq_global_kobject);
+    cpufreq_global_kobject = kobject_create_and_add("cpufreq", &cpu_subsys.dev_root->kobj);
+    BUG_ON(!cpufreq_global_kobject);
 
-	return 0;
+    pr_info("cpufreq: Boot mode = %s\n", is_android_normal_boot() ? "ANDROID" : "RECOVERY");
+
+    return 0;
 }
 module_param(off, int, 0444);
 core_initcall(cpufreq_core_init);

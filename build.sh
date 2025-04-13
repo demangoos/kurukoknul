@@ -355,7 +355,7 @@ function getclang() {
     exit 1
   fi
   if [ -f "${ClangPath}/bin/clang" ]; then
-    export KBUILD_COMPILER_STRING="$(${ClangPath}/bin/clang --version | head -n 1)"
+    export KBUILD_COMPILER_STRING="Mangoos Clang"
     print_success "Using compiler: ${KBUILD_COMPILER_STRING}"
   else
     export KBUILD_COMPILER_STRING="Unknown"
@@ -622,7 +622,7 @@ function zipping() {
     print_success "Kernel package saved to ~/${KERNEL_ZIP}${VARIANT}.zip"
     
     cd ..
-    sudo rm -rf ${AnyKernelPath}
+     rm -rf ${AnyKernelPath}
     cleanup
 }
 

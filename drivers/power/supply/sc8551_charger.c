@@ -1712,11 +1712,19 @@ static int sc8551_charger_get_property(struct power_supply *psy,
 	return 0;
 }
 
+static int sc8551_set_charge_current_ma(struct sc8551 *sc, int curr_ma)
+{
+    // Set bus OCP threshold sebagai limit arus input (mA)
+    // Bisa juga tambahkan pengaturan lain jika diperlukan
+    return sc8551_set_busocp_th(sc, curr_ma);
+}
+
 static int sc8551_charger_set_property(struct power_supply *psy,
 				       enum power_supply_property prop,
 				       const union power_supply_propval *val)
 {
 	struct sc8551 *sc = power_supply_get_drvdata(psy);
+	int ret = 0;
 	switch (prop) {
 	case POWER_SUPPLY_PROP_ONLINE:
 		sc8551_enable_charge(sc, val->intval);
@@ -1728,16 +1736,23 @@ static int sc8551_charger_set_property(struct power_supply *psy,
 		sc8551_set_present(sc, !!val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
+		// Sinkronkan arus charging dengan permintaan policy manager (uA → mA)
+		ret = sc8551_set_charge_current_ma(sc, val->intval / 1000);
+		sc_info("Set charge current (from policy manager): %d uA\n", val->intval);
 		break;
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+		// Juga sinkronkan arus input limit jika diperlukan
+		ret = sc8551_set_charge_current_ma(sc, val->intval / 1000);
+		sc_info("Set input current limit (from policy manager): %d uA\n", val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
+		// Implementasi jika ingin mengatur tegangan charge
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	return 0;
+	return ret;
 }
 
 static int sc8551_charger_is_writeable(struct power_supply *psy,
@@ -2065,3 +2080,4 @@ module_i2c_driver(sc8551_charger_driver);
 MODULE_DESCRIPTION("SC SC8551 Charge Pump Driver");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Aiden-yu@southchip.com");
+
