@@ -71,7 +71,7 @@ print_header() {
   echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
   echo -e "${CYAN}║                                                                ║${NC}"
   echo -e "${CYAN}║  ${BOLD}${MAGENTA}🥭 KERNEL BUILD SCRIPT ${YELLOW}v2.0${NC}                               ${CYAN}║${NC}"
-  echo -e "${CYAN}║  ${WHITE}Automated kernel compilation tool with visual enhancements${NC}    ${CYAN}║${NC}"
+  echo -e "${CYAN}║  ${WHITE}Automated kernel compilation tool     ${NC}    ${CYAN}║${NC}"
   echo -e "${CYAN}║                                                                ║${NC}"
   echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
   echo ""
