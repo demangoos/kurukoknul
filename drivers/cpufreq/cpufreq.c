@@ -580,10 +580,11 @@ unsigned int cpufreq_policy_transition_delay_us(struct cpufreq_policy *policy)
 		 * a reasonable amount of time after which we should reevaluate
 		 * the frequency.
 		 */
-		return min(latency * LATENCY_MULTIPLIER, (unsigned int)10000);
+		return min(latency * LATENCY_MULTIPLIER / 2, 
+			  (unsigned int)5000); // Max 5ms delay
 	}
 
-	return LATENCY_MULTIPLIER;
+	return LATENCY_MULTIPLIER / 2;
 }
 EXPORT_SYMBOL_GPL(cpufreq_policy_transition_delay_us);
 
@@ -2164,7 +2165,7 @@ static int __target_index(struct cpufreq_policy *policy, int index)
 		pr_debug("%s: cpu: %d, oldfreq: %u, new freq: %u\n",
 			 __func__, policy->cpu, freqs.old, freqs.new);
 
-		cpufreq_freq_transition_begin(policy, &freqs);
+		cpufreq_freq_transition_begin(policy, freqs);
 	}
 
 	retval = cpufreq_driver->target_index(policy, index);
@@ -2173,7 +2174,7 @@ static int __target_index(struct cpufreq_policy *policy, int index)
 		       retval);
 
 	if (notify) {
-		cpufreq_freq_transition_end(policy, &freqs, retval);
+		cpufreq_freq_transition_end(policy, freqs, retval);
 
 		/*
 		 * Failed after setting to intermediate freq? Driver should have
@@ -2184,8 +2185,8 @@ static int __target_index(struct cpufreq_policy *policy, int index)
 		if (unlikely(retval && intermediate_freq)) {
 			freqs.old = intermediate_freq;
 			freqs.new = policy->restore_freq;
-			cpufreq_freq_transition_begin(policy, &freqs);
-			cpufreq_freq_transition_end(policy, &freqs, 0);
+			cpufreq_freq_transition_begin(policy, freqs);
+			cpufreq_freq_transition_end(policy, freqs, 0);
 		}
 	}
 
@@ -2207,6 +2208,10 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 
 	pr_debug("target for CPU %u: %u kHz, relation %u, requested %u kHz\n",
 		 policy->cpu, target_freq, relation, old_target_freq);
+
+	/* Bias toward higher frequencies for better performance */
+	if (relation == CPUFREQ_RELATION_L)
+		relation = CPUFREQ_RELATION_H;
 
 	/* Save last value to restore later on errors */
 	policy->restore_freq = policy->cur;
@@ -2277,6 +2282,12 @@ static int cpufreq_init_governor(struct cpufreq_policy *policy)
 
 	pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
 
+	/* Set aggressive sampling rate for better responsiveness */
+	if (policy->governor->dynamic_switching) {
+		policy->sampling_rate_min = 10000; // 10ms sampling rate
+		policy->sampling_down_factor = 1;   // Quick frequency scaling
+	}
+
 	if (policy->governor->init) {
 		ret = policy->governor->init(policy);
 		if (ret) {
@@ -2345,6 +2356,13 @@ static void cpufreq_governor_limits(struct cpufreq_policy *policy)
 		return;
 
 	pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
+
+	/* Set minimum frequency higher for better responsiveness */
+	unsigned int min_freq = policy->cpuinfo.min_freq;
+	if (min_freq < (policy->cpuinfo.max_freq / 4))
+		min_freq = policy->cpuinfo.max_freq / 4;
+
+	policy->min = max(policy->min, min_freq);
 
 	if (policy->governor->limits)
 		policy->governor->limits(policy);

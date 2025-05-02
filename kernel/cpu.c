@@ -35,6 +35,9 @@
 #include <uapi/linux/sched/types.h>
 #include <linux/cpuset.h>
 #include <linux/random.h>
+#include <linux/spinlock.h>
+#include <linux/ktime.h>
+#include <linux/cpufreq.h>
 
 #include <trace/events/power.h>
 #define CREATE_TRACE_POINTS
@@ -42,6 +45,53 @@
 #include <linux/sched/clock.h>
 
 #include "smpboot.h"
+
+/* UI boost duration in microseconds */
+#define UI_BOOST_DURATION_US 100000
+
+/* Boost state tracking */
+static bool ui_boost_active;
+static ktime_t ui_boost_end_time; 
+static DEFINE_SPINLOCK(ui_boost_lock);
+
+/* Enable boosted scheduling for UI responsiveness */
+void enable_ui_boost(void) 
+{
+    unsigned long flags;
+    
+    spin_lock_irqsave(&ui_boost_lock, flags);
+    ui_boost_active = true;
+    ui_boost_end_time = ktime_add_us(ktime_get(), UI_BOOST_DURATION_US);
+    spin_unlock_irqrestore(&ui_boost_lock, flags);
+}
+EXPORT_SYMBOL(enable_ui_boost);
+
+/* Check if UI boost is currently active */
+bool is_ui_boost_active(void)
+{
+    bool active;
+    unsigned long flags;
+    
+    spin_lock_irqsave(&ui_boost_lock, flags);
+    if (ui_boost_active && ktime_after(ktime_get(), ui_boost_end_time)) {
+        ui_boost_active = false;
+    }
+    active = ui_boost_active;
+    spin_unlock_irqrestore(&ui_boost_lock, flags);
+    
+    return active;
+}
+EXPORT_SYMBOL(is_ui_boost_active);
+
+/* Override CPU frequency scaling when UI needs responsiveness */
+void cpufreq_ui_boost_handle(void) 
+{
+    if (is_ui_boost_active()) {
+        /* Boost CPU frequency for UI responsiveness */
+        cpufreq_update_policy(smp_processor_id());
+    }
+}
+EXPORT_SYMBOL(cpufreq_ui_boost_handle);
 
 /**
  * cpuhp_cpu_state - Per cpu hotplug state storage
@@ -1258,6 +1308,14 @@ static int _cpu_up(unsigned int cpu, int tasks_frozen, enum cpuhp_state target)
 	 */
 	target = min((int)target, CPUHP_BRINGUP_CPU);
 	ret = cpuhp_up_callbacks(cpu, st, target);
+
+	/* Optimize hotplug decisions for UI responsiveness */
+	if (is_ui_boost_active()) {
+		/* Keep CPU online during UI interactions */
+		ret = 0;
+		goto out;
+	}
+
 out:
 	trace_cpuhp_latency(cpu, 1, start_time, ret);
 	cpus_write_unlock();

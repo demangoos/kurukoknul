@@ -276,6 +276,10 @@ static int fg_write_word(struct sm_fg_chip *sm, u8 reg, u16 val)
 
 #define	FG_OP_STATUS_CHG_DISCHG		BIT(15) //if can use the charger information, plz use the charger information for CHG/DISCHG condition.
 
+#define MAX_CHARGE_POWER_W    33  // Maximum charging power in watts
+#define REDUCED_CHARGE_CURRENT_MA 10000  // Reduced charging current at 80% SOC in mA
+#define HIGH_SOC_THRESHOLD    80  // SOC threshold to reduce charging current
+
 static int fg_read_status(struct sm_fg_chip *sm)
 {
 	int ret;
@@ -1408,8 +1412,51 @@ static enum power_supply_property fg_props[] = {
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
 };
 
-static void fg_monitor_workfunc(struct work_struct *work);
+static void fg_monitor_workfunc(struct work_struct *work)
+{
+    struct sm_fg_chip *sm = container_of(work, struct sm_fg_chip,
+                                monitor_work.work);
+    int batt_soc;
+    union power_supply_propval val = {0,};
 
+    mutex_lock(&sm->data_lock);
+    fg_init(sm->client);
+    mutex_unlock(&sm->data_lock);
+
+    fg_refresh_status(sm);
+
+    // Get current SOC
+    batt_soc = fg_read_soc(sm) / 10; // Convert to percentage
+
+    // Get charger power supply
+    if (!sm->bq_psy)
+        sm->bq_psy = power_supply_get_by_name("bq25890_charger");
+
+    if (sm->bq_psy) {
+        // Set maximum charging power
+        val.intval = MAX_CHARGE_POWER_W;
+        power_supply_set_property(sm->bq_psy,
+                POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT,
+                &val);
+
+        // Reduce charging current if SOC >= 80%
+        if (batt_soc >= HIGH_SOC_THRESHOLD) {
+            val.intval = REDUCED_CHARGE_CURRENT_MA;
+            power_supply_set_property(sm->bq_psy,
+                    POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
+                    &val);
+        }
+    }
+
+#ifdef CONFIG_HQ_QGKI
+    fg_recharge(sm);
+#endif
+
+    if (poll_interval > 0) {
+        schedule_delayed_work(&sm->monitor_work, 
+                            msecs_to_jiffies(poll_interval * 1000));
+    }
+}
 
 static int fg_get_property(struct power_supply *psy, enum power_supply_property psp,
 					union power_supply_propval *val)
@@ -2141,25 +2188,8 @@ static int fg_recharge(struct sm_fg_chip *sm) {
 	return 0;
 }
 #endif
+
 static unsigned int poll_interval = 10; /*  10 sec */
-static void fg_monitor_workfunc(struct work_struct *work)
-{
-	struct sm_fg_chip *sm = container_of(work, struct sm_fg_chip,
-								monitor_work.work);
-
-	mutex_lock(&sm->data_lock);
-	fg_init(sm->client);
-	mutex_unlock(&sm->data_lock);
-
-	fg_refresh_status(sm);
-#ifdef CONFIG_HQ_QGKI
-	fg_recharge(sm);
-#endif
-	if (poll_interval > 0) {
-		schedule_delayed_work(&sm->monitor_work, msecs_to_jiffies(poll_interval * 1000)); /* poll_interval(10) * 1000 = 10 sec */
-	}
-
-}
 
 #ifdef ENABLE_INIT_DELAY_TEMP
 static void fg_init_delay_temp_workfunc(struct work_struct *work)

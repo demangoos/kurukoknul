@@ -148,6 +148,10 @@ do {											\
 		printk(KERN_DEBUG "[sc8551-STANDALONE]:%s:" fmt, __func__, ##__VA_ARGS__);\
 } while(0);
 
+#define MAX_CHARGE_POWER_W 33
+#define REDUCED_CHARGE_CURRENT_MA 10000
+#define BATTERY_THRESHOLD_PCT 80
+
 struct sc8551_cfg {
 	bool bat_ovp_disable;
 	bool bat_ocp_disable;
@@ -272,6 +276,7 @@ struct sc8551 {
 	struct power_supply_desc psy_desc;
 	struct power_supply_config psy_cfg;
 	struct power_supply *fc2_psy;
+	struct power_supply *batt_psy;
 };
 
 static int __sc8551_read_byte(struct sc8551 *sc, u8 reg, u8 *data)
@@ -1473,16 +1478,63 @@ static int sc8551_init_regulation(struct sc8551 *sc)
 
 static int sc8551_init_device(struct sc8551 *sc)
 {
+	int max_curr_ma;
+
 	sc8551_set_reg_reset(sc);
 	sc8551_enable_wdt(sc, false);
 	sc8551_set_ss_timeout(sc, 100000);
 	sc8551_set_sense_resistor(sc, sc->cfg->sense_r_mohm);
+
+	// Calculate max current based on 33W limit
+	// P = V * I, assuming typical battery voltage of 4V
+	max_curr_ma = (MAX_CHARGE_POWER_W * 1000) / 4; // Convert 33W to mA at 4V
+
+	// Set max charge current
+	sc8551_set_busocp_th(sc, max_curr_ma);
+
 	sc8551_init_protection(sc);
 	sc8551_init_adc(sc);
 	sc8551_init_int_src(sc);
 	sc8551_init_regulation(sc);
 
 	return 0;
+}
+
+static int sc8551_adjust_charging_power(struct sc8551 *sc, int batt_soc)
+{
+	int curr_ma;
+
+	if (batt_soc >= BATTERY_THRESHOLD_PCT) {
+		// Reduce charging current when battery >= 80%
+		curr_ma = REDUCED_CHARGE_CURRENT_MA;
+	} else {
+		// Maximum power at 33W
+		curr_ma = (MAX_CHARGE_POWER_W * 1000) / 4; // Assuming 4V battery voltage
+	}
+
+	return sc8551_set_busocp_th(sc, curr_ma);
+}
+
+static void sc8551_monitor_work(struct work_struct *work)
+{
+	struct sc8551 *sc = container_of(work, struct sc8551, monitor_work.work);
+	union power_supply_propval val = {0,};
+	int ret;
+
+	// Get battery SOC from main battery power supply
+	if (!sc->batt_psy)
+		sc->batt_psy = power_supply_get_by_name("battery");
+
+	if (sc->batt_psy) {
+		ret = power_supply_get_property(sc->batt_psy,
+					POWER_SUPPLY_PROP_CAPACITY, &val);
+		if (ret == 0) {
+			// Adjust charging power based on battery SOC
+			sc8551_adjust_charging_power(sc, val.intval);
+		}
+	}
+
+	schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000)); // Check every 5 seconds
 }
 
 static int sc8551_set_present(struct sc8551 *sc, bool present)
@@ -1841,6 +1893,10 @@ static int sc8551_charger_probe(struct i2c_client *client,
 
 	device_init_wakeup(sc->dev, 1);
 
+	// Initialize monitoring work
+	INIT_DELAYED_WORK(&sc->monitor_work, sc8551_monitor_work);
+	schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000));
+
 	determine_initial_status(sc);
 
 	sc_info("sc8551 probe successfully, Part Num:%d\n!",
@@ -1907,6 +1963,8 @@ static int sc8551_resume(struct device *dev)
 static int sc8551_charger_remove(struct i2c_client *client)
 {
 	struct sc8551 *sc = i2c_get_clientdata(client);
+
+	cancel_delayed_work_sync(&sc->monitor_work);
 
 	sc8551_enable_adc(sc, false);
 	power_supply_unregister(sc->fc2_psy);

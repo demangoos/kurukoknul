@@ -373,6 +373,13 @@ static int min_extfrag_threshold;
 static int max_extfrag_threshold = 1000;
 #endif
 
+// Add near other constant definitions
+static int two_hundred_fifty = 250;
+static int half_ms = 500000;  // 0.5ms in ns
+static int two_ms = 2000000;  // 2ms in ns
+static int four_ms = 4000000; // 4ms in ns 
+static int ten_ms = 10000000; // 10ms in ns
+
 static struct ctl_table kern_table[] = {
 	{
 		.procname	= "sched_child_runs_first",
@@ -471,7 +478,7 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= SYSCTL_ZERO,
-		.extra2		= &one_thousand,
+		.extra2		= &two_hundred_fifty,
 	},
 	{
 		.procname	= "sched_min_task_util_for_colocation",
@@ -531,8 +538,8 @@ static struct ctl_table kern_table[] = {
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_busy_hyst_handler,
-		.extra1		= SYSCTL_ZERO,
-		.extra2		= &ns_per_sec,
+		.extra1		 = &half_ms,
+		.extra2		= &two_ms,
 	},
 	{
 		.procname	= "sched_coloc_busy_hysteresis_enable_cpus",
@@ -661,8 +668,8 @@ static struct ctl_table kern_table[] = {
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_proc_update_handler,
-		.extra1		= &min_sched_granularity_ns,
-		.extra2		= &max_sched_granularity_ns,
+		.extra1		= &four_ms,
+		.extra2		= &ten_ms,
 	},
 	{
 		.procname	= "sched_latency_ns",
@@ -670,8 +677,8 @@ static struct ctl_table kern_table[] = {
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_proc_update_handler,
-		.extra1		= &min_sched_granularity_ns,
-		.extra2		= &max_sched_granularity_ns,
+		.extra1		= &four_ms,
+		.extra2		= &ten_ms,
 	},
 	{
 		.procname	= "sched_wakeup_granularity_ns",
@@ -679,8 +686,8 @@ static struct ctl_table kern_table[] = {
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= sched_proc_update_handler,
-		.extra1		= &min_wakeup_granularity_ns,
-		.extra2		= &max_wakeup_granularity_ns,
+		.extra1		= &half_ms,
+		.extra2		= &two_ms,
 	},
 #ifdef CONFIG_SMP
 	{
