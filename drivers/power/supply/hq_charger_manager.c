@@ -624,20 +624,20 @@ static void  sw_battery_jeita(struct batt_chg *chg, int temp)
 		chg->jeita_cur = 0;
 }
 
+static int force_fast_charge = 0;
 static void sw_get_charger_type_current_limit(struct batt_chg *chg,int type)
 {
 	switch (type)
 	{
-		case POWER_SUPPLY_TYPE_USB:
-		int force_fast_charge = 0;
-			if (force_fast_charge > 0) {
- 				chg->charge_limit_cur = 900000;
- 				chg->input_limit_cur = 900000;
- 			} else {
- 				chg->charge_limit_cur = 500000;
- 				chg->input_limit_cur = 500000;
- 			}
-			break;
+		 case POWER_SUPPLY_TYPE_USB:
+            if (force_fast_charge > 0) {
+                chg->charge_limit_cur = 900000;
+                chg->input_limit_cur = 900000;
+            } else {
+                chg->charge_limit_cur = 500000;
+                chg->input_limit_cur = 500000;
+            }
+            break;
 		case POWER_SUPPLY_TYPE_USB_FLOAT:
 			chg->charge_limit_cur = 1000000;
 			chg->input_limit_cur = 1000000;

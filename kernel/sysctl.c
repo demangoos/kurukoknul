@@ -120,30 +120,43 @@ extern unsigned int sysctl_nr_open_min, sysctl_nr_open_max;
 extern int sysctl_nr_trim_pages;
 #endif
 
-/* Constants used for minimum and  maximum */
+/* Constants used for minimum and maximum */
 #ifdef CONFIG_LOCKUP_DETECTOR
 static int sixty = 60;
 #endif
 
+/* Ensure we only define these once and match external declarations */
+extern int laptop_mode;
+extern int sysctl_drop_caches;
+extern int sysctl_compact_memory;
+
+int sysctl_vfs_cache_pressure __read_mostly = 100;
+static unsigned long min_free_kbytes_min = 128;
+static unsigned long min_free_kbytes_max = 135166;
+static int one = 1;
+static int four = 4;
+static int one_thousand = 1000;
+static unsigned long one_ul = 1;
 static int __maybe_unused neg_one = -1;
 
 static int __maybe_unused two = 2;
-static int __maybe_unused four = 4;
 static unsigned long zero_ul;
-static unsigned long one_ul = 1;
 static unsigned long long_max = LONG_MAX;
 static int one_hundred = 100;
-static int one_thousand = 1000;
+
 #ifdef CONFIG_QCOM_HYP_CORE_CTL
 static int five_hundred = 500;
 static int five_thousand = 5000;
 #endif
+
 #ifdef CONFIG_PRINTK
 static int ten_thousand = 10000;
 #endif
+
 #ifdef CONFIG_PERF_EVENTS
 static int six_hundred_forty_kb = 640 * 1024;
 #endif
+
 static int __maybe_unused max_kswapd_threads = MAX_KSWAPD_THREADS;
 
 #ifdef CONFIG_SCHED_WALT
@@ -362,6 +375,32 @@ static int min_sched_granularity_ns = 100000;		/* 100 usecs */
 static int max_sched_granularity_ns = NSEC_PER_SEC;	/* 1 second */
 static int min_wakeup_granularity_ns;			/* 0 usecs */
 static int max_wakeup_granularity_ns = NSEC_PER_SEC;	/* 1 second */
+/* Nilai default optimal untuk Snapdragon 695 (Poco X5 5G) */
+static int __init setup_vm_sysctl(void) {
+    /* Memory Management */
+    vm_swappiness = 10;                 /* Kurangi swap untuk performa lebih baik */
+    dirty_background_ratio = 5;         /* Hindari bottleneck I/O */
+    vm_dirty_ratio = 15;                /* Tingkatkan threshold untuk flushing */
+    dirty_expire_interval = 200;        /* 2 detik untuk expire dirty pages */
+    dirty_writeback_interval = 300;     /* 3 detik untuk writeback */
+    
+    /* Page Clustering - Perangkat dengan RAM besar bisa menggunakan nilai lebih tinggi */
+    page_cluster = 3;                   /* 2^3 halaman sekaligus untuk operasi I/O */
+    
+    /* Penggunaan variabel yang sebelumnya tidak terpakai */
+    min_sched_granularity_ns = 2000000; /* 2ms untuk context switching */
+    max_sched_granularity_ns = NSEC_PER_SEC / 2; /* 500ms */
+    min_wakeup_granularity_ns = 1000000; /* 1ms */
+    max_wakeup_granularity_ns = NSEC_PER_SEC / 4; /* 250ms */
+    
+    /* Parameter lainnya */
+    sysctl_vfs_cache_pressure = 50;     /* Seimbang antara cache dan memori */
+    min_free_kbytes = 32768;            /* 32MB minimum free memory */
+    watermark_scale_factor = 150;       /* Tingkatkan untuk lebih agresif reclaim */
+    
+    return 0;
+}
+early_initcall(setup_vm_sysctl);
 #ifdef CONFIG_SMP
 static int min_sched_tunable_scaling = SCHED_TUNABLESCALING_NONE;
 static int max_sched_tunable_scaling = SCHED_TUNABLESCALING_END-1;
@@ -1797,6 +1836,88 @@ static struct ctl_table vm_table[] = {
 		.proc_handler   = proc_dointvec_minmax,
 		.extra1         = SYSCTL_ZERO,
 		.extra2         = SYSCTL_ONE,
+	},
+	/* Tambahkan parameter untuk peningkatan performa */
+	{
+		.procname	= "vfs_cache_pressure",
+		.data		= &sysctl_vfs_cache_pressure,
+		.maxlen		= sizeof(sysctl_vfs_cache_pressure),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= SYSCTL_ZERO,
+		.extra2		= &one_hundred,
+	},
+	{
+		.procname	= "laptop_mode",
+		.data		= &laptop_mode,
+		.maxlen		= sizeof(laptop_mode),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= SYSCTL_ZERO,
+		.extra2		= &one_hundred,
+	},
+	{
+		.procname	= "drop_caches",
+		.data		= &sysctl_drop_caches,
+		.maxlen		= sizeof(sysctl_drop_caches),
+		.mode		= 0644,
+		.proc_handler	= drop_caches_sysctl_handler,
+		.extra1		= SYSCTL_ZERO,
+		.extra2		= &four,
+	},
+	{
+		.procname	= "compact_memory",
+		.data		= &sysctl_compact_memory,
+		.maxlen		= sizeof(sysctl_compact_memory),
+		.mode		= 0200,
+		.proc_handler	= sysctl_compaction_handler,
+	},
+	{
+		.procname	= "min_free_kbytes",
+		.data		= &min_free_kbytes,
+		.maxlen		= sizeof(min_free_kbytes),
+		.mode		= 0644,
+		.proc_handler	= min_free_kbytes_sysctl_handler,
+		.extra1		= &min_free_kbytes_min,
+		.extra2		= &min_free_kbytes_max,
+	},
+	{
+		.procname	= "watermark_scale_factor",
+		.data		= &watermark_scale_factor,
+		.maxlen		= sizeof(watermark_scale_factor),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= &one,
+		.extra2		= &one_thousand,
+	},
+	/* Gunakan variabel yang sebelumnya tidak terpakai */
+	{
+		.procname	= "min_sched_granularity_ns",
+		.data		= &min_sched_granularity_ns,
+		.maxlen		= sizeof(min_sched_granularity_ns),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "max_sched_granularity_ns",
+		.data		= &max_sched_granularity_ns,
+		.maxlen		= sizeof(max_sched_granularity_ns),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "min_wakeup_granularity_ns",
+		.data		= &min_wakeup_granularity_ns,
+		.maxlen		= sizeof(min_wakeup_granularity_ns),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "max_wakeup_granularity_ns",
+		.data		= &max_wakeup_granularity_ns,
+		.maxlen		= sizeof(max_wakeup_granularity_ns),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
 	},
 #ifdef CONFIG_NUMA
 	{

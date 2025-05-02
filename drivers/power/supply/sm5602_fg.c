@@ -280,6 +280,11 @@ static int fg_write_word(struct sm_fg_chip *sm, u8 reg, u16 val)
 #define REDUCED_CHARGE_CURRENT_MA 10000  // Reduced charging current at 80% SOC in mA
 #define HIGH_SOC_THRESHOLD    80  // SOC threshold to reduce charging current
 
+static unsigned int poll_interval = 10; /* 10 sec */
+
+static void fg_refresh_status(struct sm_fg_chip *sm);
+static int fg_recharge(struct sm_fg_chip *sm);
+
 static int fg_read_status(struct sm_fg_chip *sm)
 {
 	int ret;
@@ -1348,13 +1353,12 @@ static int fg_cal_carc (struct sm_fg_chip *sm)
 	return 1;
 }
 
-/*
 static int fg_get_batt_status(struct sm_fg_chip *sm)
 {
 	if (!sm->batt_present)
 		return POWER_SUPPLY_STATUS_UNKNOWN;
-	//else if (sm->batt_fc)
-	//	return POWER_SUPPLY_STATUS_FULL;
+	else if (sm->batt_fc)
+		return POWER_SUPPLY_STATUS_FULL;
 	else if (sm->batt_dsg)
 		return POWER_SUPPLY_STATUS_DISCHARGING;
 	else if (sm->batt_curr > 0)
@@ -1363,8 +1367,110 @@ static int fg_get_batt_status(struct sm_fg_chip *sm)
 		return POWER_SUPPLY_STATUS_NOT_CHARGING;
 
 }
-*/
 
+static void fg_refresh_status(struct sm_fg_chip *sm)
+{
+	bool last_batt_inserted;
+	bool last_batt_fc;
+	bool last_batt_ot;
+	bool last_batt_ut;	
+	static int last_soc, last_temp;
+
+	last_batt_inserted	= sm->batt_present;
+	last_batt_fc		= sm->batt_fc;
+	last_batt_ot		= sm->batt_ot;
+	last_batt_ut		= sm->batt_ut;
+
+	fg_read_status(sm);
+
+	if (!last_batt_inserted && sm->batt_present) {/* battery inserted */
+		pr_info("Battery inserted\n");
+	} else if (last_batt_inserted && !sm->batt_present) {/* battery removed */
+		pr_info("Battery removed\n");
+		sm->batt_soc	= -ENODATA;
+		sm->batt_fcc	= -ENODATA;
+		sm->batt_volt	= -ENODATA;
+		sm->batt_curr	= -ENODATA;
+		sm->batt_temp	= -ENODATA;
+		sm->batt_rmc	= -ENODATA;
+	}
+
+	if ((last_batt_inserted != sm->batt_present)
+		|| (last_batt_fc != sm->batt_fc)
+		|| (last_batt_ot != sm->batt_ot)
+		|| (last_batt_ut != sm->batt_ut))
+		power_supply_changed(sm->fg_psy);
+
+	if (sm->batt_present) {	
+		last_soc = sm->batt_soc;
+		last_temp = sm->batt_temp;
+	
+		sm->batt_soc = fg_read_soc(sm);
+		sm->batt_ocv = fg_read_ocv(sm);
+		sm->batt_volt = fg_read_volt(sm);
+		sm->batt_curr = fg_read_current(sm);
+		sm->batt_soc_cycle = fg_get_cycle(sm);
+		if (sm->en_temp_in)
+			sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_IN);
+		else if (sm->en_temp_ex)
+			sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_EX);
+		else 
+			sm->batt_temp = -ENODATA;
+		sm->batt_rmc = fg_read_rmc(sm);
+		fg_cal_carc(sm);
+		
+		pr_info("RSOC:%d, Volt:%d, Current:%d, Temperature:%d, OCV:%d, RMC:%d\n",
+			sm->batt_soc, sm->batt_volt, sm->batt_curr, sm->batt_temp, sm->batt_ocv, sm->batt_rmc);
+			
+#ifdef SOC_SMOOTH_TRACKING		
+		/* Update battery information */
+		sm->param.batt_ma = sm->batt_curr;
+#ifdef ENABLE_MAP_SOC
+		sm->param.batt_raw_soc = (((sm->batt_soc*10+MAP_MAX_SOC)*100/MAP_RATE_SOC)-MAP_MIN_SOC);
+		sm->param.batt_raw_soc = (sm->param.batt_raw_soc >=1000) ? 1000 : sm->param.batt_raw_soc;
+#else
+		sm->param.batt_raw_soc = sm->batt_soc;
+#endif
+		sm->soc_reporting_ready = 1;
+		sm->param.batt_temp = sm->batt_temp;
+
+		if (sm->soc_reporting_ready)
+			fg_soc_smooth_tracking(sm);
+#endif		
+	}
+
+	if (sm->fg_psy)
+		power_supply_changed(sm->fg_psy);
+	if (sm->batt_psy)
+		power_supply_changed(sm->batt_psy);
+}
+
+static int fg_recharge(struct sm_fg_chip *sm)
+{
+	struct power_supply *psy;
+	struct bq25890_device *bq;
+	psy = power_supply_get_by_name("bq25890_charger");
+	if (!psy) {
+		pr_err("%s: failed to get psy\n", __func__);
+		return -1;
+	}
+
+	bq = power_supply_get_drvdata(psy);
+	if (!bq) {
+		pr_err("%s: failed to get bq device\n", __func__);
+		return -1;
+	}
+	bq25890_detect_charger_vbus_good_status(bq);
+	bq25890_detect_status(bq);
+	if ( bq->charger_status == 3 && (sm->batt_soc <= FG_RECHARGE_CAPACITY_limit) && bq->vbus_good_status && sm->batt_temp < 48 && (bq->charger_val == 1)) {
+		bq_recharge_flag = 1;
+		bq25890_charger_stop_charge(bq);
+		msleep(100);
+		bq25890_charger_start_charge(bq);
+	}
+	pr_err("bq->charger_status:%d,sm->batt_soc:%d,bq->vbus_good_status:%d,sm->batt_temp:%d,bq->charger_val:%d\n",bq->charger_status,sm->batt_soc,bq->vbus_good_status,sm->batt_temp,bq->charger_val);
+	return 0;
+}
 
 static int fg_get_batt_capacity_level(struct sm_fg_chip *sm)
 {
@@ -1479,7 +1585,7 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
-		//val->intval = fg_get_batt_status(sm);
+		val->intval = fg_get_batt_status(sm);
 /*		pr_info("fg POWER_SUPPLY_PROP_STATUS:%d\n", val->intval); */
 		if (sm->bq_psy == NULL)
 			sm->bq_psy = power_supply_get_by_name("bq25890_charger");
@@ -1616,9 +1722,6 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 		}		
 #endif		
 		sm->p_report_soc = val->intval;
-		#ifndef CONFIG_HQ_QGKI
-		sm->p_report_soc = 50;
-		#endif
 		break;
 
 	case POWER_SUPPLY_PROP_CAPACITY_LEVEL:
@@ -1648,10 +1751,6 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 			val->intval = 25 * 10;
 #else
 		val->intval = sm->batt_temp * 10; //1.0degree = 10		
-#endif
-#ifndef CONFIG_HQ_QGKI
-		val->intval = 250;
-		pr_info("gki version set batt temp 25");
 #endif
 		mutex_unlock(&sm->data_lock);
 		break;
@@ -1778,13 +1877,8 @@ static char *sm5602_fg_supplied_to[] = {
 };
 
 static const struct power_supply_desc fg_power_supply_desc = {
-// #ifdef CONFIG_HQ_QGKI
 	.name			= "sm5602_bat",
 	.type			= POWER_SUPPLY_TYPE_MAINS, /* POWER_SUPPLY_TYPE_BMS(kernel:4.19)  -> POWER_SUPPLY_TYPE_MAINS(kernel:5.4) */
-// #else
-// 	.name 			= "battery",
-// 	.type 			= POWER_SUPPLY_TYPE_BATTERY,
-// #endif
 	.get_property	= fg_get_property,
 	.set_property	= fg_set_property,
 	.properties		= fg_props,
@@ -2077,119 +2171,6 @@ static void soc_monitor_work(struct work_struct *work)
 }
 #endif
 #endif
-static void fg_refresh_status(struct sm_fg_chip *sm)
-{
-	bool last_batt_inserted;
-	bool last_batt_fc;
-	bool last_batt_ot;
-	bool last_batt_ut;	
-	static int last_soc, last_temp;
-
-	last_batt_inserted	= sm->batt_present;
-	last_batt_fc		= sm->batt_fc;
-	last_batt_ot		= sm->batt_ot;
-	last_batt_ut		= sm->batt_ut;
-
-	fg_read_status(sm);
-
-	if (!last_batt_inserted && sm->batt_present) {/* battery inserted */
-		pr_info("Battery inserted\n");
-	} else if (last_batt_inserted && !sm->batt_present) {/* battery removed */
-		pr_info("Battery removed\n");
-		sm->batt_soc	= -ENODATA;
-		sm->batt_fcc	= -ENODATA;
-		sm->batt_volt	= -ENODATA;
-		sm->batt_curr	= -ENODATA;
-		sm->batt_temp	= -ENODATA;
-		sm->batt_rmc	= -ENODATA;
-	}
-
-	if ((last_batt_inserted != sm->batt_present)
-		|| (last_batt_fc != sm->batt_fc)
-		|| (last_batt_ot != sm->batt_ot)
-		|| (last_batt_ut != sm->batt_ut))
-		power_supply_changed(sm->fg_psy);
-
-	if (sm->batt_present) {	
-		last_soc = sm->batt_soc;
-		last_temp = sm->batt_temp;
-	
-		sm->batt_soc = fg_read_soc(sm);
-		sm->batt_ocv = fg_read_ocv(sm);
-		sm->batt_volt = fg_read_volt(sm);
-		sm->batt_curr = fg_read_current(sm);
-		sm->batt_soc_cycle = fg_get_cycle(sm);
-		if (sm->en_temp_in)
-			sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_IN);
-		else if (sm->en_temp_ex)
-			sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_EX);
-		else 
-			sm->batt_temp = -ENODATA;
-		sm->batt_rmc = fg_read_rmc(sm);
-		fg_cal_carc(sm);
-
-		//if ((last_soc != sm->batt_soc)
-		//		|| (last_temp != sm->batt_temp)) {
-		//	pr_info("fg_psy changed\n");
-		//	power_supply_changed(sm->fg_psy);
-		//}
-		
-		pr_info("RSOC:%d, Volt:%d, Current:%d, Temperature:%d, OCV:%d, RMC:%d\n",
-			sm->batt_soc, sm->batt_volt, sm->batt_curr, sm->batt_temp, sm->batt_ocv, sm->batt_rmc);
-			
-#ifdef SOC_SMOOTH_TRACKING		
-		/* Update battery information */
-		sm->param.batt_ma = sm->batt_curr;
-#ifdef ENABLE_MAP_SOC
-		sm->param.batt_raw_soc = (((sm->batt_soc*10+MAP_MAX_SOC)*100/MAP_RATE_SOC)-MAP_MIN_SOC);
-		sm->param.batt_raw_soc = (sm->param.batt_raw_soc >=1000) ? 1000 : sm->param.batt_raw_soc;
-#else
-		sm->param.batt_raw_soc = sm->batt_soc;
-#endif
-		sm->soc_reporting_ready = 1;
-		sm->param.batt_temp = sm->batt_temp;
-
-		if (sm->soc_reporting_ready)
-			fg_soc_smooth_tracking(sm);
-#endif		
-	}
-
-	if (sm->fg_psy)
-		power_supply_changed(sm->fg_psy);
-	if (sm->batt_psy)
-		power_supply_changed(sm->batt_psy);
-	//sm->last_update = jiffies;
-
-}
-#ifdef CONFIG_HQ_QGKI
-static int fg_recharge(struct sm_fg_chip *sm) {
-	struct power_supply *psy;
-	struct bq25890_device *bq;
-	psy = power_supply_get_by_name("bq25890_charger");
-	if (!psy) {
-		pr_err("%s: failed to get psy\n", __func__);
-		return -1;
-	}
-
-	bq = power_supply_get_drvdata(psy);
-	if (!bq) {
-		pr_err("%s: failed to get bq device\n", __func__);
-		return -1;
-	}
-	bq25890_detect_charger_vbus_good_status(bq);
-	bq25890_detect_status(bq);
-	if ( bq->charger_status == 3 && (sm->batt_soc <= FG_RECHARGE_CAPACITY_limit) && bq->vbus_good_status && sm->batt_temp < 48 && (bq->charger_val == 1)) {
-		bq_recharge_flag = 1;
-		bq25890_charger_stop_charge(bq);
-		msleep(100);
-		bq25890_charger_start_charge(bq);
-	}
-	pr_err("bq->charger_status:%d,sm->batt_soc:%d,bq->vbus_good_status:%d,sm->batt_temp:%d,bq->charger_val:%d\n",bq->charger_status,sm->batt_soc,bq->vbus_good_status,sm->batt_temp,bq->charger_val);
-	return 0;
-}
-#endif
-
-static unsigned int poll_interval = 10; /*  10 sec */
 
 #ifdef ENABLE_INIT_DELAY_TEMP
 static void fg_init_delay_temp_workfunc(struct work_struct *work)

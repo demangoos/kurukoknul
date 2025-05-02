@@ -2110,145 +2110,6 @@ unsigned int cpufreq_driver_fast_switch(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_driver_fast_switch);
 
-/* Must set freqs->new to intermediate frequency */
-static int __target_intermediate(struct cpufreq_policy *policy,
-				 struct cpufreq_freqs *freqs, int index)
-{
-	int ret;
-
-	freqs->new = cpufreq_driver->get_intermediate(policy, index);
-
-	/* We don't need to switch to intermediate freq */
-	if (!freqs->new)
-		return 0;
-
-	pr_debug("%s: cpu: %d, switching to intermediate freq: oldfreq: %u, intermediate freq: %u\n",
-		 __func__, policy->cpu, freqs->old, freqs->new);
-
-	cpufreq_freq_transition_begin(policy, freqs);
-	ret = cpufreq_driver->target_intermediate(policy, index);
-	cpufreq_freq_transition_end(policy, freqs, ret);
-
-	if (ret)
-		pr_err("%s: Failed to change to intermediate frequency: %d\n",
-		       __func__, ret);
-
-	return ret;
-}
-
-static int __target_index(struct cpufreq_policy *policy, int index)
-{
-	struct cpufreq_freqs freqs = {.old = policy->cur, .flags = 0};
-	unsigned int intermediate_freq = 0;
-	unsigned int newfreq = policy->freq_table[index].frequency;
-	int retval = -EINVAL;
-	bool notify;
-
-	if (newfreq == policy->cur)
-		return 0;
-
-	notify = !(cpufreq_driver->flags & CPUFREQ_ASYNC_NOTIFICATION);
-	if (notify) {
-		/* Handle switching to intermediate frequency */
-		if (cpufreq_driver->get_intermediate) {
-			retval = __target_intermediate(policy, &freqs, index);
-			if (retval)
-				return retval;
-
-			intermediate_freq = freqs.new;
-			/* Set old freq to intermediate */
-			if (intermediate_freq)
-				freqs.old = freqs.new;
-		}
-
-		freqs.new = newfreq;
-		pr_debug("%s: cpu: %d, oldfreq: %u, new freq: %u\n",
-			 __func__, policy->cpu, freqs.old, freqs.new);
-
-		cpufreq_freq_transition_begin(policy, freqs);
-	}
-
-	retval = cpufreq_driver->target_index(policy, index);
-	if (retval)
-		pr_err("%s: Failed to change cpu frequency: %d\n", __func__,
-		       retval);
-
-	if (notify) {
-		cpufreq_freq_transition_end(policy, freqs, retval);
-
-		/*
-		 * Failed after setting to intermediate freq? Driver should have
-		 * reverted back to initial frequency and so should we. Check
-		 * here for intermediate_freq instead of get_intermediate, in
-		 * case we haven't switched to intermediate freq at all.
-		 */
-		if (unlikely(retval && intermediate_freq)) {
-			freqs.old = intermediate_freq;
-			freqs.new = policy->restore_freq;
-			cpufreq_freq_transition_begin(policy, freqs);
-			cpufreq_freq_transition_end(policy, freqs, 0);
-		}
-	}
-
-	return retval;
-}
-
-int __cpufreq_driver_target(struct cpufreq_policy *policy,
-			    unsigned int target_freq,
-			    unsigned int relation)
-{
-	unsigned int old_target_freq = target_freq;
-	int index;
-
-	if (cpufreq_disabled())
-		return -ENODEV;
-
-	/* Make sure that target_freq is within supported range */
-	target_freq = clamp_val(target_freq, policy->min, policy->max);
-
-	pr_debug("target for CPU %u: %u kHz, relation %u, requested %u kHz\n",
-		 policy->cpu, target_freq, relation, old_target_freq);
-
-	/* Bias toward higher frequencies for better performance */
-	if (relation == CPUFREQ_RELATION_L)
-		relation = CPUFREQ_RELATION_H;
-
-	/* Save last value to restore later on errors */
-	policy->restore_freq = policy->cur;
-
-	if (cpufreq_driver->target)
-		return cpufreq_driver->target(policy, target_freq, relation);
-
-	if (!cpufreq_driver->target_index)
-		return -EINVAL;
-
-	index = cpufreq_frequency_table_target(policy, target_freq, relation);
-
-	return __target_index(policy, index);
-}
-EXPORT_SYMBOL_GPL(__cpufreq_driver_target);
-
-int cpufreq_driver_target(struct cpufreq_policy *policy,
-			  unsigned int target_freq,
-			  unsigned int relation)
-{
-	int ret;
-
-	down_write(&policy->rwsem);
-
-	ret = __cpufreq_driver_target(policy, target_freq, relation);
-
-	up_write(&policy->rwsem);
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(cpufreq_driver_target);
-
-__weak struct cpufreq_governor *cpufreq_fallback_governor(void)
-{
-	return NULL;
-}
-
 static int cpufreq_init_governor(struct cpufreq_policy *policy)
 {
 	int ret;
@@ -2256,6 +2117,7 @@ static int cpufreq_init_governor(struct cpufreq_policy *policy)
 	/* Don't start any governor operations if we are entering suspend */
 	if (cpufreq_suspended)
 		return 0;
+
 	/*
 	 * Governor might not be initiated here if ACPI _PPC changed
 	 * notification happened, so check it.
@@ -2282,10 +2144,11 @@ static int cpufreq_init_governor(struct cpufreq_policy *policy)
 
 	pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
 
-	/* Set aggressive sampling rate for better responsiveness */
+	/* Set default sampling rate and sampling factor if supported by governor */
 	if (policy->governor->dynamic_switching) {
-		policy->sampling_rate_min = 10000; // 10ms sampling rate
-		policy->sampling_down_factor = 1;   // Quick frequency scaling
+		/* No direct parameter setting - governors should provide their own interfaces */
+		pr_debug("Setting up dynamic frequency switching for governor %s\n", 
+			policy->governor->name);
 	}
 
 	if (policy->governor->init) {
@@ -2352,13 +2215,15 @@ static void cpufreq_stop_governor(struct cpufreq_policy *policy)
 
 static void cpufreq_governor_limits(struct cpufreq_policy *policy)
 {
+	unsigned int min_freq;  // Move declaration to top
+
 	if (cpufreq_suspended || !policy->governor)
 		return;
 
 	pr_debug("%s: for CPU %u\n", __func__, policy->cpu);
 
 	/* Set minimum frequency higher for better responsiveness */
-	unsigned int min_freq = policy->cpuinfo.min_freq;
+	min_freq = policy->cpuinfo.min_freq;
 	if (min_freq < (policy->cpuinfo.max_freq / 4))
 		min_freq = policy->cpuinfo.max_freq / 4;
 
