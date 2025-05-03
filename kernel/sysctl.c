@@ -130,7 +130,9 @@ extern int laptop_mode;
 extern int sysctl_drop_caches;
 extern int sysctl_compact_memory;
 
-int sysctl_vfs_cache_pressure __read_mostly = 100;
+/* Remove duplicate declaration since it's already defined elsewhere */
+extern int sysctl_vfs_cache_pressure;
+
 static unsigned long min_free_kbytes_min = 128;
 static unsigned long min_free_kbytes_max = 135166;
 static int one = 1;

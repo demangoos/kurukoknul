@@ -2110,6 +2110,64 @@ unsigned int cpufreq_driver_fast_switch(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_driver_fast_switch);
 
+/**
+ * __cpufreq_driver_target - set a new target frequency
+ * @policy: cpufreq policy
+ * @target_freq: target frequency in kHz
+ * @relation: how to choose the target frequency
+ *
+ * Sets a new target frequency based on relation. This function does not
+ * set the frequency directly, but handles validation and policy limits.
+ *
+ * Return: 0 on success, negative error code otherwise
+ */
+int __cpufreq_driver_target(struct cpufreq_policy *policy,
+				 unsigned int target_freq,
+				 unsigned int relation)
+{
+	unsigned int old_target_freq = target_freq;
+	int retval = -EINVAL;
+
+	if (cpufreq_disabled())
+		return -ENODEV;
+
+	/* Make sure we're not being called during suspend/resume */
+	if (unlikely(cpufreq_suspended))
+		return -EAGAIN;
+
+	/*
+	 * Handle frequency clamping and policy min/max update if needed.
+	 */
+	target_freq = clamp_val(target_freq, policy->min, policy->max);
+
+	pr_debug("target for CPU %u: %u kHz, relation %u, requested %u kHz\n",
+		 policy->cpu, target_freq, relation, old_target_freq);
+
+	if (cpufreq_driver->target)
+		retval = cpufreq_driver->target(policy, target_freq, relation);
+	else if (cpufreq_driver->target_index) {
+		struct cpufreq_frequency_table *freq_table;
+		int idx;
+
+		freq_table = policy->freq_table;
+		if (!freq_table) {
+			pr_err("%s: Unable to find frequency table\n", __func__);
+			return -EINVAL;
+		}
+
+		retval = cpufreq_frequency_table_target(policy, target_freq,
+						      relation);
+		if (retval)
+			return retval;
+
+		idx = retval;
+		retval = cpufreq_driver->target_index(policy, idx);
+	}
+
+	return retval;
+}
+EXPORT_SYMBOL_GPL(__cpufreq_driver_target);
+
 static int cpufreq_init_governor(struct cpufreq_policy *policy)
 {
 	int ret;
