@@ -28,6 +28,13 @@
 #include <linux/power/charger-manager.h>
 #include "sc8551_reg.h"
 
+/* Disable all charging logs */
+#define pr_fmt(fmt) ""
+#define pr_err(fmt, ...) 
+#define pr_info(fmt, ...) 
+#define pr_debug(fmt, ...) 
+#define pr_warn(fmt, ...) 
+
 extern void power_supply_unregister(struct power_supply *psy);
 
 typedef enum {

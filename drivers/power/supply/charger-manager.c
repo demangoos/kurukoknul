@@ -26,6 +26,13 @@
 #include <linux/of.h>
 #include <linux/thermal.h>
 
+/* Disable all charging logs */
+#define pr_fmt(fmt) ""
+#define pr_err(fmt, ...) 
+#define pr_info(fmt, ...) 
+#define pr_debug(fmt, ...) 
+#define pr_warn(fmt, ...) 
+
 /*
  * Default temperature threshold for charging.
  * Every temperature units are in tenth of centigrade.

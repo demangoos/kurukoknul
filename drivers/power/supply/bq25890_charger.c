@@ -30,6 +30,13 @@
 #include "sm5602_fg.h"
 #include "bq25890.h"
 
+/* Disable all charging logs */
+#define pr_fmt(fmt) ""
+#define pr_err(fmt, ...) 
+#define pr_info(fmt, ...) 
+#define pr_debug(fmt, ...) 
+#define pr_warn(fmt, ...) 
+
 #define BQ25890_MANUFACTURER		"Texas Instruments"
 #define BQ25890_IRQ_PIN			"bq25890_irq"
 #define BQ25890_REG_NUM			21

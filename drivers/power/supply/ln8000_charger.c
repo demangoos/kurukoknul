@@ -26,6 +26,13 @@
 #include "ln8000_charger.h"
 #include <linux/power/charger-manager.h>
 
+/* Disable all charging logs */
+#define pr_fmt(fmt) ""
+#define pr_err(fmt, ...) 
+#define pr_info(fmt, ...) 
+#define pr_debug(fmt, ...) 
+#define pr_warn(fmt, ...) 
+
 extern void power_supply_unregister(struct power_supply *psy);
 extern void gpiod_put(struct gpio_desc *desc);
 extern struct gpio_desc *__must_check gpiod_get(struct device *dev, const char *con_id,

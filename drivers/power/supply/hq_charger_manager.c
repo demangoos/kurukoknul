@@ -21,6 +21,13 @@
 
 #include <misc/fastchg.h>
 
+/* Disable all charging logs */
+#define pr_fmt(fmt) ""
+#define pr_err(fmt, ...) 
+#define pr_info(fmt, ...) 
+#define pr_debug(fmt, ...) 
+#define pr_warn(fmt, ...) 
+
 #if 0
 int set_jeita_lcd_on_off(bool lcdon)
 {
