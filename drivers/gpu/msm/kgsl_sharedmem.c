@@ -9,6 +9,8 @@
 #include <linux/highmem.h>
 #include <linux/slab.h>
 #include <linux/random.h>
+#include <linux/module.h>
+#include <linux/vmalloc.h>
 
 #include "kgsl_device.h"
 #include "kgsl_pool.h"
@@ -1495,4 +1497,75 @@ void kgsl_sharedmem_set_noretry(bool val)
 bool kgsl_sharedmem_get_noretry(void)
 {
 	return sharedmem_noretry_flag;
+}
+
+// Add display thread group ID tracking
+static pid_t display_tgid = -1;
+module_param_named(display_tgid, display_tgid, int, 0644);
+MODULE_PARM_DESC(display_tgid, "Thread group ID of display process");
+
+// Define UI memory pool structure 
+struct ui_mem_pool {
+    spinlock_t lock;
+    unsigned long size;
+    unsigned long used;
+};
+
+static struct ui_mem_pool ui_pool;
+
+// Initialize UI memory pool
+static void init_ui_mem_pool(void) 
+{
+    spin_lock_init(&ui_pool.lock);
+    ui_pool.size = SZ_64M;  // Pre-allocate 64MB for UI
+    ui_pool.used = 0;
+}
+
+/* Modified allocation function with UI priorities */
+static int kgsl_alloc_ui_memory(struct kgsl_device *device,
+    struct kgsl_memdesc *memdesc, uint64_t size)
+{
+    int ret = 0;
+    
+    spin_lock(&ui_pool.lock);
+    if (size <= (ui_pool.size - ui_pool.used)) {
+        memdesc->size = PAGE_ALIGN(size);
+        
+        /* Allocate using regular path but mark as UI memory */
+        ret = kgsl_allocate_kernel(device, memdesc, 
+                    size, memdesc->flags, 0);
+        
+        if (!ret)
+            ui_pool.used += memdesc->size;
+    }
+    spin_unlock(&ui_pool.lock);
+
+    return ret;
+}
+
+// Helper to check if task is UI related
+static bool is_ui_process(void)
+{
+    return (current->tgid == display_tgid || 
+            strstr(current->comm, "UI_") == 0);
+}
+
+// Modify existing allocation path to try UI pool first
+int kgsl_sharedmem_alloc(struct kgsl_device *device,
+    struct kgsl_memdesc *memdesc, uint64_t size, uint64_t flags)
+{
+    int ret;
+
+    if (size == 0 || size > UINT_MAX)
+        return -EINVAL;
+
+    if (is_ui_process()) {
+        // Try allocating from UI pool first
+        ret = kgsl_alloc_ui_memory(device, memdesc, size);
+        if (!ret)
+            return 0;
+    }
+
+    // Fall back to regular allocation
+    return kgsl_allocate_kernel(device, memdesc, size, flags, 0);
 }

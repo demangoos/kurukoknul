@@ -1626,9 +1626,6 @@ static void a6xx_llc_configure_gpuhtw_scid(struct adreno_device *adreno_dev)
 		!adreno_dev->gpuhtw_llc_slice_enable)
 		return;
 
-	if (llcc_slice_activate(adreno_dev->gpuhtw_llc_slice))
-		return;
-
 	/*
 	 * On SMMU-v500, the GPUHTW SCID is configured via a NoC override in
 	 * the XBL image.
@@ -2797,7 +2794,6 @@ const struct adreno_gpudev adreno_a630_gpudev = {
 	.reset = a6xx_gmu_restart,
 	.preemption_pre_ibsubmit = a6xx_preemption_pre_ibsubmit,
 	.preemption_post_ibsubmit = a6xx_preemption_post_ibsubmit,
-	.preemption_init = a6xx_preemption_init,
 	.preemption_schedule = a6xx_preemption_schedule,
 	.set_marker = a6xx_set_marker,
 	.preemption_context_init = a6xx_preemption_context_init,
@@ -2809,3 +2805,15 @@ const struct adreno_gpudev adreno_a630_gpudev = {
 	.read_alwayson = a6xx_read_alwayson,
 	.power_ops = &a630_gmu_power_ops,
 };
+
+/* Command queue size optimization values */
+#define A6XX_CP_ROQ_SIZE_VAL 0x200
+#define A6XX_CP_CMD_QUEUE_SIZE_VAL 0x100  
+#define A6XX_CP_HDR_QUEUE_SIZE_VAL 0x80
+
+/* Register addresses for preemption control */
+#define A6XX_CP_CONTEXT_SWITCH_PRIV_CONTROL 0xE9A
+#define A6XX_CP_CONTEXT_SWITCH_PRIV_COUNTER 0xE9B
+#define A6XX_CP_QUEUE_CMD_THRESHOLDS 0xE92
+
+/* Remove the duplicate a6xx_preemption_init() implementation */

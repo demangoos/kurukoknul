@@ -13,7 +13,6 @@
 #include "kgsl_device.h"
 #include "kgsl_trace.h"
 
-
 static u32 _ab_buslevel_update(struct kgsl_pwrctrl *pwr,
 		u32 ib)
 {
@@ -38,41 +37,38 @@ static void set_ddr_qos(struct kgsl_device *device, int buslevel)
 	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
 	struct devfreq *dev = pwr->ddr_qos_devfreq;
 	static unsigned long cur_min_freq;
-	unsigned long new_min_freq = DEVFREQ_MIN_FREQ;
+	unsigned long new_min_freq = 0;
 	int ret;
 
 	if (!dev)
 		return;
 
 	/*
-	 * Instead of creating a new dummy governor, we are using powersave
-	 * governor for this devfreq device. Therefore, modify the minimum
-	 * frequency to point to the desired QOS level.
+	 * Set new_min_freq based on buslevel directly instead of 
+	 * using bus_scale structure
 	 */
-	if (buslevel == pwr->pwrlevels[0].bus_max)
+	if (buslevel >= pwr->ddr_table_count - 1)
 		new_min_freq = DEVFREQ_MAX_FREQ;
+	else if (buslevel <= 0)
+		new_min_freq = pwr->ddr_table[1];
 
 	if (new_min_freq == cur_min_freq)
 		return;
 
-	/*
-	 * We need the event lock to protect against concurrent governor
-	 * re-assignments.
-	 */
-	event_mutex_lock(dev);
 	mutex_lock(&dev->lock);
-	/*
-	 * Update both min/max to make sure correct vote is set regardless
-	 * of the governor, which can be changed from sysfs
-	 */
-	dev->min_freq = new_min_freq;
-	dev->max_freq = new_min_freq;
-	ret = update_devfreq(dev);
-	mutex_unlock(&dev->lock);
-	event_mutex_unlock(dev);
 
-	if (!ret)
+	dev->min_freq = new_min_freq;
+	dev->max_freq = DEVFREQ_MAX_FREQ;
+
+	ret = update_devfreq(dev);
+	if (ret) {
+		dev_err(device->dev, "DDR QoS update failed (%d)\n", ret);
+		dev->min_freq = cur_min_freq;
+	} else {
 		cur_min_freq = new_min_freq;
+	}
+
+	mutex_unlock(&dev->lock);
 }
 
 int kgsl_bus_update(struct kgsl_device *device,
@@ -119,6 +115,25 @@ int kgsl_bus_update(struct kgsl_device *device,
 	set_ddr_qos(device, buslevel);
 
 	return 0;
+}
+
+static int kgsl_bus_scale_request(struct kgsl_device *device,
+				unsigned int level)
+{
+	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
+	int ret = 0;
+
+	/* Bound check the level */
+	level = clamp_t(unsigned int, level, 1, pwr->ddr_table_count - 1);
+
+	/* Enhanced bus frequency selection */
+	if (level > pwr->active_pwrlevel)
+		level = min_t(unsigned int, level + 1, pwr->ddr_table_count - 1);
+
+	ret = device->ftbl->gpu_bus_set(device, level,
+		_ab_buslevel_update(pwr, pwr->ddr_table[level]));
+
+	return ret;
 }
 
 static void validate_pwrlevels(struct kgsl_device *device, u32 *ibs,

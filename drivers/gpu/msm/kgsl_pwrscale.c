@@ -11,6 +11,10 @@
 #include "kgsl_pwrscale.h"
 #include "kgsl_trace.h"
 
+#define GPU_LOAD_POLL_INTERVAL 25 // Reduced from default for quicker response
+#define GPU_LOAD_MIN_THRESHOLD 35 // Lowered threshold for earlier scaling
+#define GPU_LOAD_MAX_THRESHOLD 80 // Increased for more stable max performance
+
 static struct devfreq_msm_adreno_tz_data adreno_tz_data = {
 	.bus = {
 		.max = 350,
@@ -31,9 +35,34 @@ static struct kgsl_midframe_info {
 	struct kgsl_device *device;
 } *kgsl_midframe = NULL;
 
-static void do_devfreq_suspend(struct work_struct *work);
-static void do_devfreq_resume(struct work_struct *work);
-static void do_devfreq_notify(struct work_struct *work);
+static void do_devfreq_suspend(struct work_struct *work)
+{
+	struct kgsl_pwrscale *pwrscale = container_of(work, 
+		struct kgsl_pwrscale, devfreq_suspend_ws);
+	struct devfreq *devfreq = pwrscale->devfreqptr;
+
+	devfreq_suspend_device(devfreq);
+}
+
+static void do_devfreq_resume(struct work_struct *work)
+{
+	struct kgsl_pwrscale *pwrscale = container_of(work,
+		struct kgsl_pwrscale, devfreq_resume_ws);
+	struct devfreq *devfreq = pwrscale->devfreqptr;
+
+	devfreq_resume_device(devfreq);
+}
+
+static void do_devfreq_notify(struct work_struct *work)
+{
+	struct kgsl_pwrscale *pwrscale = container_of(work,
+		struct kgsl_pwrscale, devfreq_notify_ws);
+	struct devfreq *devfreq = pwrscale->devfreqptr;
+
+	srcu_notifier_call_chain(&pwrscale->nh,
+				 ADRENO_DEVFREQ_NOTIFY_RETIRE,
+				 devfreq);
+}
 
 /*
  * These variables are used to keep the latest data
@@ -947,33 +976,4 @@ void kgsl_pwrscale_close(struct kgsl_device *device)
 	device->pwrscale.devfreqptr = NULL;
 	srcu_cleanup_notifier_head(&device->pwrscale.nh);
 	dev_pm_opp_unregister_notifier(&device->pdev->dev, &pwr->nb);
-}
-
-static void do_devfreq_suspend(struct work_struct *work)
-{
-	struct kgsl_pwrscale *pwrscale = container_of(work,
-			struct kgsl_pwrscale, devfreq_suspend_ws);
-	struct devfreq *devfreq = pwrscale->devfreqptr;
-
-	devfreq_suspend_device(devfreq);
-}
-
-static void do_devfreq_resume(struct work_struct *work)
-{
-	struct kgsl_pwrscale *pwrscale = container_of(work,
-			struct kgsl_pwrscale, devfreq_resume_ws);
-	struct devfreq *devfreq = pwrscale->devfreqptr;
-
-	devfreq_resume_device(devfreq);
-}
-
-static void do_devfreq_notify(struct work_struct *work)
-{
-	struct kgsl_pwrscale *pwrscale = container_of(work,
-			struct kgsl_pwrscale, devfreq_notify_ws);
-	struct devfreq *devfreq = pwrscale->devfreqptr;
-
-	srcu_notifier_call_chain(&pwrscale->nh,
-				 ADRENO_DEVFREQ_NOTIFY_RETIRE,
-				 devfreq);
 }

@@ -15,13 +15,13 @@
 #define DRAWQUEUE_NEXT(_i, _s) (((_i) + 1) % (_s))
 
 /* Number of commands that can be queued in a context before it sleeps */
-static unsigned int _context_drawqueue_size = 50;
+static unsigned int _context_drawqueue_size = 75; /* Increased from 50 */
 
 /* Number of milliseconds to wait for the context queue to clear */
 static unsigned int _context_queue_wait = 10000;
 
 /* Number of drawobjs sent at a time from a single context */
-static unsigned int _context_drawobj_burst = 5;
+static unsigned int _context_drawobj_burst = 8; /* Increased from 5 */
 
 /*
  * GFT throttle parameters. If GFT recovered more than
@@ -36,13 +36,13 @@ static unsigned int _fault_throttle_burst = 3;
  * Maximum ringbuffer inflight for the single submitting context case - this
  * should be sufficiently high to keep the GPU loaded
  */
-static unsigned int _dispatcher_q_inflight_hi = 15;
+static unsigned int _dispatcher_q_inflight_hi = 24; /* Increased from 15 */
 
 /*
  * Minimum inflight for the multiple context case - this should sufficiently low
  * to allow for lower latency context switching
  */
-static unsigned int _dispatcher_q_inflight_lo = 4;
+static unsigned int _dispatcher_q_inflight_lo = 8; /* Increased from 4 */
 
 /* Command batch timeout (in milliseconds) */
 unsigned int adreno_drawobj_timeout = 2000;
@@ -59,6 +59,8 @@ static struct kmem_cache *jobs_cache;
 		struct adreno_ringbuffer, dispatch_q))
 
 #define DRAWQUEUE(_ringbuffer) (&(_ringbuffer)->dispatch_q)
+
+#define FRAME_INTERVAL_TARGET 16666667 /* 60 FPS in nanoseconds */
 
 static int adreno_dispatch_retire_drawqueue(struct adreno_device *adreno_dev,
 		struct adreno_dispatcher_drawqueue *drawqueue);
@@ -2393,6 +2395,8 @@ static int adreno_dispatch_retire_drawqueue(struct adreno_device *adreno_dev,
 	struct adreno_dispatcher *dispatcher = &adreno_dev->dispatcher;
 	int count = 0;
 
+	static u64 last_frame_time;
+
 	while (!adreno_drawqueue_is_empty(drawqueue)) {
 		struct kgsl_drawobj_cmd *cmdobj =
 			drawqueue->cmd_q[drawqueue->head];
@@ -2413,6 +2417,19 @@ static int adreno_dispatch_retire_drawqueue(struct adreno_device *adreno_dev,
 			ADRENO_DISPATCH_DRAWQUEUE_SIZE);
 
 		count++;
+
+		/* Frame pacing */
+		u64 current_time = ktime_get_ns();
+
+		if (drawobj->flags & KGSL_DRAWOBJ_END_OF_FRAME) {
+			u64 frame_time = current_time - last_frame_time;
+			if (frame_time < FRAME_INTERVAL_TARGET) {
+				u64 sleep_time = FRAME_INTERVAL_TARGET - frame_time;
+				if (sleep_time > 1000000) /* Don't sleep more than 1ms */
+					ndelay(sleep_time);
+			}
+			last_frame_time = current_time;
+		}
 	}
 
 	return count;

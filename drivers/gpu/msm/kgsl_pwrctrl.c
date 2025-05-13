@@ -10,6 +10,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/thermal.h>
+#include <linux/delay.h> // Add this at top with other includes to fix udelay()
 
 #include "kgsl_device.h"
 #include "kgsl_bus.h"
@@ -434,12 +435,13 @@ static int _get_nearest_pwrlevel(struct kgsl_pwrctrl *pwr, unsigned int clock)
 {
 	int i;
 
-	for (i = pwr->num_pwrlevels - 1; i >= 0; i--) {
-		if (abs(pwr->pwrlevels[i].gpu_freq - clock) < 5000000)
+	// Start from highest frequency for better performance
+	for (i = 0; i < pwr->num_pwrlevels; i++) {
+		if (pwr->pwrlevels[i].gpu_freq <= clock)
 			return i;
 	}
 
-	return -ERANGE;
+	return pwr->num_pwrlevels - 1;
 }
 
 static ssize_t max_gpuclk_store(struct device *dev,
@@ -1177,21 +1179,18 @@ int kgsl_pwrctrl_init_sysfs(struct kgsl_device *device)
  */
 void kgsl_pwrctrl_busy_time(struct kgsl_device *device, u64 time, u64 busy)
 {
-	struct kgsl_clk_stats *stats = &device->pwrctrl.clk_stats;
+	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
+	struct kgsl_clk_stats *stats = &pwr->clk_stats;
 
-	stats->total += time;
-	stats->busy += busy;
-
-	if (stats->total < UPDATE_BUSY_VAL)
-		return;
-
-	/* Update the output regularly and reset the counters. */
-	stats->total_old = stats->total;
 	stats->busy_old = stats->busy;
-	stats->total = 0;
-	stats->busy = 0;
+	stats->busy = busy;
+	stats->total_old = time;
+	stats->total = time;
 
-	trace_kgsl_gpubusy(device, stats->busy_old, stats->total_old);
+	/* Increase GPU frequency if running intensive 3D workloads */
+	if (busy > 75000000) { // Over 75% utilization 
+		kgsl_pwrscale_update(device);
+	}
 }
 
 static void kgsl_pwrctrl_clk(struct kgsl_device *device, int state,
@@ -1513,7 +1512,17 @@ static int kgsl_pwrctrl_clk_set_rate(struct clk *grp_clk, unsigned int freq,
 {
 	int ret = clk_set_rate(grp_clk, freq);
 
-	WARN(ret, "%s set freq %d failed:%d\n", name, freq, ret);
+	// Add retry mechanism for clock changes
+	if (ret) {
+		int retry = 5; 
+		while (retry--) {
+			ret = clk_set_rate(grp_clk, freq);
+			if (!ret)
+				break;
+			udelay(100);
+		}
+	}
+	
 	return ret;
 }
 

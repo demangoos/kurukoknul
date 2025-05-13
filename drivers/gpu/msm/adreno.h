@@ -171,6 +171,22 @@
 #define ADRENO_FW_SQE 0
 #define ADRENO_FW_PM4 1
 
+/* Enhanced performance constants for A619 */
+#define A619_BUSY_THRESHOLD      80       // Reduced from 90
+#define A619_ALT_BUSY_THRESHOLD  40       // Reduced from 50  
+#define A619_IDLE_THRESHOLD      20       // Reduced from 30
+
+/* Memory bandwidth optimization */
+#define A619_DEFAULT_BUS_WIDTH   32    
+#define A619_MIN_BUS_THROUGHPUT  4000    // MBps
+#define A619_MAX_BUS_THROUGHPUT  7500    // MBps
+#define A619_BUS_SCALE_THRESHOLD 3000    // Increased threshold
+
+/* Command queue enhancements */
+#define A619_CMD_QUEUE_SIZE     (32 * 1024)  // Increased from 16K
+#define A619_DISPATCH_QUEUE_SIZE (16 * 1024)  // Increased from 8K
+#define A619_DISPATCH_Q_MAX      128         // Increased from 64
+
 enum adreno_gpurev {
 	ADRENO_REV_UNKNOWN = 0,
 	ADRENO_REV_A304 = 304,

@@ -1153,6 +1153,9 @@ struct rq {
 	int			idle_state_idx;
 #endif
 #endif
+
+	/* For touch boost tracking */
+	unsigned long touch_boost_end;
 };
 
 #ifdef CONFIG_FAIR_GROUP_SCHED

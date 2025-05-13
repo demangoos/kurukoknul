@@ -18,7 +18,8 @@
 #include <dt-bindings/iio/qti_power_supply_iio.h>
 #include <linux/iio/consumer.h>
 #include "hq_charger_manager.h"
-#include <misc/fastchgtoggle.h>
+
+#include <misc/fastchg.h>
 
 #if 0
 int set_jeita_lcd_on_off(bool lcdon)
@@ -72,6 +73,17 @@ static int batt_get_charge_status(struct batt_chg *chg, int* status)
 	}
 	rc = power_supply_get_property(chg->fg_psy, POWER_SUPPLY_PROP_STATUS, &pval);
 	*status = pval.intval;
+
+	return rc;
+}
+
+static int batt_get_charge_term_current(struct batt_chg *chg, int* charge_term_current)
+{
+	int rc;
+	union power_supply_propval pval = {0, };
+	if (!chg->fg_psy) return -1;
+	rc = power_supply_get_property(chg->sw_psy, POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT, &pval);
+	*charge_term_current = pval.intval;
 
 	return rc;
 }
@@ -253,6 +265,16 @@ static int batt_get_charge_counter(struct batt_chg *chg, int* charge_counter)
 	return rc;
 }
 
+static int batt_get_input_current_limit(struct batt_chg *chg, int* input_current_limit)
+{
+	int rc = 0;
+	union power_supply_propval pval = {0, };
+	if(!chg->sw_psy) return -1;
+	rc = power_supply_get_property(chg->sw_psy, POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT, &pval);
+	*input_current_limit = pval.intval;
+	return rc;
+}
+
 static int batt_get_batt_verify_state(struct batt_chg *chg)
 {
 	int rc;
@@ -290,6 +312,54 @@ static int batt_get_batt_verify_state(struct batt_chg *chg)
 			chg->batt_auth = 0;
 	}
 	return rc;
+}
+
+static int batt_get_time_to_full(struct batt_chg *chg, int *time_to_full)
+{
+    int rc = 0;
+    int charge_now_uAh = -1;
+    int charge_full_uAh = 0;
+    int current_now_uA = 0;
+    int delta_uAh = 0;
+    int capacity = -1;
+
+    if (!chg->fg_psy) {
+        pr_err("charge manager %s:%d, cannot find fg_psy\n", __func__, __LINE__);
+        return -ENODEV;
+    }
+
+    rc = batt_get_battery_current_uA(chg, &current_now_uA);
+    if (rc || current_now_uA >= 0) {
+        *time_to_full = 0;
+        return 0;
+    }
+
+    current_now_uA = abs(current_now_uA);
+
+    rc = batt_get_battery_full(chg, &charge_full_uAh);
+    if (rc)
+        return rc;
+
+    rc = batt_get_charge_counter(chg, &charge_now_uAh);
+    if (rc || charge_now_uAh < 0) {
+        rc = batt_get_battery_capacity(chg, &capacity);
+        if (rc || capacity < 0 || capacity > 100) {
+            *time_to_full = 0;
+            return rc;
+        }
+
+        delta_uAh = (charge_full_uAh * (100 - capacity)) / 100;
+    } else {
+        delta_uAh = charge_full_uAh - charge_now_uAh;
+        if (delta_uAh <= 0) {
+            *time_to_full = 0;
+            return 0;
+        }
+    }
+
+    *time_to_full = ((delta_uAh * 3600) / current_now_uA) * 10;
+
+    return 0;
 }
 
 /*+++++++++++++++++++++ end +++++++++++++++++++++*/
@@ -406,6 +476,7 @@ static int batt_psy_get_prop(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		rc = batt_get_battery_current_uA(chg, &pval->intval);
+		pval->intval = pval->intval/1000;
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
 		rc = batt_get_battery_constant_current(chg, &pval->intval);
@@ -427,6 +498,9 @@ static int batt_psy_get_prop(struct power_supply *psy,
 		rc = batt_get_charge_counter(chg, &pval->intval);
 		pval->intval *= 1000;
 		break;
+	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
+		rc = batt_get_charge_term_current(chg, &pval->intval);
+		break;
 	case POWER_SUPPLY_PROP_CYCLE_COUNT:
 		rc = batt_get_battery_cycle_count(chg, &pval->intval);
 		break;
@@ -435,6 +509,12 @@ static int batt_psy_get_prop(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
 		rc = batt_get_battery_full_design(chg, &pval->intval);
+		break;
+	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+		rc = batt_get_input_current_limit(chg, &pval->intval);
+		break;
+	case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
+		rc = batt_get_time_to_full(chg, &pval->intval);
 		break;
 	default:
 		pr_err("batt power supply prop %d not supported\n", psp);
@@ -559,11 +639,10 @@ static int sw_battery_set_cv(struct batt_chg *chg, int temp, int type)
 	int sw_vreg = 4448000;
 
 	if (type == POWER_SUPPLY_TYPE_USB_PD) {
-		if (chg->is_pps_on && fast_chg_allowed()) {
+		if (chg->is_pps_on) {
 			sw_vreg = CM_FFC_SW_VREG_HIGH;
 			bq25890_charging_term_en(false);
 		} else {
-		        sw_vreg = 5000000;
 			if (switch_count++ > 3) {
 				switch_count = 0;
 				bq25890_charging_term_en(true);
@@ -624,51 +703,38 @@ static void  sw_battery_jeita(struct batt_chg *chg, int temp)
 		chg->jeita_cur = 0;
 }
 
-static int force_fast_charge = 0;
 static void sw_get_charger_type_current_limit(struct batt_chg *chg,int type)
 {
 	switch (type)
 	{
-		 case POWER_SUPPLY_TYPE_USB:
-            if (force_fast_charge > 0) {
-                chg->charge_limit_cur = 900000;
-                chg->input_limit_cur = 900000;
-            } else {
-                chg->charge_limit_cur = 500000;
-                chg->input_limit_cur = 500000;
-            }
-            break;
+		case POWER_SUPPLY_TYPE_USB:
+			if (force_fast_charge > 0) {
+				chg->charge_limit_cur = 900000;
+				chg->input_limit_cur = 900000;
+			} else {
+				chg->charge_limit_cur = 500000;
+				chg->input_limit_cur = 500000;
+			}
+			break;
 		case POWER_SUPPLY_TYPE_USB_FLOAT:
 			chg->charge_limit_cur = 1000000;
 			chg->input_limit_cur = 1000000;
 			break;
 		case POWER_SUPPLY_TYPE_USB_CDP:
-			if (fast_chg_allowed()) { 
-             			chg->charge_limit_cur = 1500000;
-             			chg->input_limit_cur = 1500000;
-         		} else {
-             			chg->charge_limit_cur = 1000000;
-             			chg->input_limit_cur = 1000000;
-         		}
-         		break;
+			chg->charge_limit_cur = 1500000;
+			chg->input_limit_cur = 1500000;
+			break;
 		case POWER_SUPPLY_TYPE_USB_DCP:
-			if (fast_chg_allowed()) { 
-             			chg->charge_limit_cur = 1950000;
-             			chg->input_limit_cur = 1950000;
-         		} else {
-             			chg->charge_limit_cur = 1500000;
-             			chg->input_limit_cur = 1500000;
-         		}
-         		break;
+			chg->charge_limit_cur = 1950000;
+			chg->input_limit_cur = 1950000;
+			break;
 		case POWER_SUPPLY_TYPE_USB_PD:
-			if (fast_chg_allowed()) { 
-             			chg->charge_limit_cur = chg->batt_auth ? 3000000 : 2000000;
-             			chg->input_limit_cur = 3000000;
-         		} else {
-             			chg->charge_limit_cur = 1000000;
-             			chg->input_limit_cur = 1000000;
-         		}
-         		break;
+			if (chg->batt_auth)
+				chg->charge_limit_cur = 3000000;
+			else
+				chg->charge_limit_cur = 2000000;
+			chg->input_limit_cur = 3000000;
+			break;
 		case POWER_SUPPLY_TYPE_UNKNOWN:
 			chg->charge_limit_cur = 0;
 			chg->input_limit_cur = 0;
@@ -721,28 +787,19 @@ static int swchg_select_charging_current_limit(struct batt_chg *chg, int temp, i
 		pr_err("%s: charger state is %d, temp %d, jeita_cur %d, thermal_cur %d, type_icl %d, type_ibat %d, icl %d, ibat %d, is_mtbf %d\n", 
 			__func__, type, chg->battery_temp, chg->jeita_cur, chg->therm_cur, chg->input_limit_cur,  chg->charge_limit_cur, icl, ibat, is_mtbf_mode_func());
 	} else {
-		if(!chg->is_pps_on || !fast_chg_allowed()) {
+		if(!chg->is_pps_on) {
 			icl = chg->input_limit_cur;
 			ibat = min(chg->charge_limit_cur, chg->jeita_cur);
-			
-			if (!fast_chg_allowed()) {
-             			icl = min(icl, 1000000);
-             			ibat = min(ibat, 1000000);
-         		}
-         		
 			if(chg->therm_cur != 0)
 				ibat = min(ibat, chg->therm_cur);
 			//for phone current limit
-		if (ibat == 900000 && fast_chg_allowed()) {
-         			if (chg->sw_chg_chip_id == 3)
-             				ibat = 2500000;
-         			else
-             				ibat = 2000000;
-         			icl = 900000;
-     			} else if (ibat == 900000) {
-         			ibat = 1000000;
-         			icl = 900000;
-     			}
+		if (ibat == 900000) {
+			if (chg->sw_chg_chip_id == 3)
+				ibat = 2500000;
+			else
+				ibat = 2000000;
+			icl = 900000;
+		}
 			val.intval = icl;
 			rc = power_supply_set_property(chg->sw_psy, POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT, &val);
 			val.intval = ibat;
@@ -927,7 +984,6 @@ static int batt_parse_dt(struct batt_chg *chg)
 #if 0
 static int get_boot_mode(void)
 {
-#ifdef CONFIG_WT_QGKI
 	char *bootmode_string= NULL;
 	char bootmode_start[32] = " ";
 	int rc;
@@ -941,7 +997,6 @@ static int get_boot_mode(void)
 			return 1;
 		}
 	}
-#endif
 	return 0;
 }
 #endif
@@ -1167,9 +1222,7 @@ static int batt_chg_probe(struct platform_device *pdev)
 	rc = batt_parse_dt(batt_chg);
 	if (rc < 0) {
 		pr_err("Couldn't parse device tree rc=%d\n", rc);
-#ifdef CONFIG_WT_QGKI
 		goto cleanup;
-#endif
 	}
 
 	rc = batt_init_config(batt_chg);

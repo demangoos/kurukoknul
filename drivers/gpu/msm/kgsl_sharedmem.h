@@ -375,4 +375,8 @@ static inline bool kgsl_cachemode_is_cached(u64 flags)
 	return (mode != KGSL_CACHEMODE_UNCACHED &&
 		mode != KGSL_CACHEMODE_WRITECOMBINE);
 }
+
+/* UI memory flags */
+#define KGSL_MEMFLAGS_UI BIT(31)
+
 #endif /* __KGSL_SHAREDMEM_H */
