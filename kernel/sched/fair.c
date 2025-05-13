@@ -27,6 +27,38 @@
 
 #include "walt/walt.h"
 
+/* UI task detection */
+#define UI_VRUNTIME_BONUS (20 * NICE_0_LOAD)
+#define TOUCH_BOOST_DURATION (500 * HZ / 1000) // 500ms touch boost
+
+static bool is_ui_related_task(struct task_struct *p) 
+{
+	static const char *ui_processes[] = {
+		"surfaceflinger",
+		"system_server", 
+		"composer",
+		"render",
+		"UI",
+		"input"
+	};
+	int i;
+
+	if (!p || !p->comm)
+		return false;
+
+	// Check process name against known UI processes
+	for (i = 0; i < ARRAY_SIZE(ui_processes); i++) {
+		if (strstr(p->comm, ui_processes[i]))
+			return true;
+	}
+
+	// Consider high priority tasks as UI-related
+	if (p->prio < DEFAULT_PRIO - 5)
+		return true;
+
+	return false;
+}
+
 #ifdef CONFIG_SMP
 static inline bool task_fits_max(struct task_struct *p, int cpu);
 #endif /* CONFIG_SMP */
@@ -12398,3 +12430,19 @@ const struct cpumask *sched_trace_rd_span(struct root_domain *rd)
 #endif
 }
 EXPORT_SYMBOL_GPL(sched_trace_rd_span);
+
+// Add touch boost functionality
+void touch_event_detected(void)
+{
+	int cpu;
+	unsigned long touch_boost_end;
+	
+	touch_boost_end = jiffies + TOUCH_BOOST_DURATION;
+
+	// Update touch boost end time on all CPUs
+	for_each_online_cpu(cpu) {
+		struct rq *rq = cpu_rq(cpu);
+		rq->touch_boost_end = touch_boost_end;
+	}
+}
+EXPORT_SYMBOL(touch_event_detected);

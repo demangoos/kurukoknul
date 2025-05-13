@@ -403,7 +403,6 @@ static int ln8000_set_ovpfet_high_imp(struct ln8000_info *info, bool enable)
 }
 
 /* grab programmed battery float voltage (uV) */
-
 static int ln8000_get_vbat_float(struct ln8000_info *info)
 {
 	int ret;
@@ -1428,7 +1427,7 @@ static int ln8000_get_dev_role(struct i2c_client *client)
 
         dev_info(&client->dev, "%s: matched to %s\n", __func__, of_id->compatible);
 
-	return (uintptr_t)of_id->data;
+	return (int)of_id->data;
 }
 
 static int ln8000_parse_dt(struct ln8000_info *info)

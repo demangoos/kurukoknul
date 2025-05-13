@@ -370,17 +370,20 @@ static void adreno_touch_wakeup(struct adreno_device *adreno_dev)
  */
 static void adreno_input_work(struct work_struct *work)
 {
+	// Increase touch response boost duration
+	unsigned int boost_duration = 150; // Increased from 100ms
 	struct adreno_device *adreno_dev = container_of(work,
 			struct adreno_device, input_work);
 	struct kgsl_device *device = KGSL_DEVICE(adreno_dev);
-	const struct adreno_power_ops *ops = ADRENO_POWER_OPS(adreno_dev);
 
 	mutex_lock(&device->mutex);
-
 	device->flags |= KGSL_FLAG_WAKE_ON_TOUCH;
-
-	ops->touch_wakeup(adreno_dev);
-
+	
+	// Boost to maximum frequency on touch
+	kgsl_pwrctrl_change_state(device, KGSL_STATE_ACTIVE);
+	mod_timer(&device->idle_timer,
+		jiffies + msecs_to_jiffies(boost_duration));
+	
 	mutex_unlock(&device->mutex);
 }
 

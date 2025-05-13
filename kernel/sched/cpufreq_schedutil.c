@@ -16,6 +16,14 @@
 #include <trace/hooks/sched.h>
 
 #define IOWAIT_BOOST_MIN	(SCHED_CAPACITY_SCALE / 8)
+#define DEFAULT_UP_RATE_LIMIT_US 5000
+#define DEFAULT_DOWN_RATE_LIMIT_US 20000
+#define DEFAULT_HISPEED_LOAD 85
+#define TARGET_LOAD 75
+
+// Cluster-specific boost frequencies
+#define DEFAULT_CPU0_RTG_BOOST_FREQ 1700000  // Little cluster
+#define DEFAULT_CPU6_RTG_BOOST_FREQ 2200000  // Big cluster
 
 struct sugov_tunables {
 	struct gov_attr_set	attr_set;
@@ -267,7 +275,7 @@ static void sugov_deferred_update(struct sugov_policy *sg_policy, u64 time,
 	walt_irq_work_queue(&sg_policy->irq_work);
 }
 
-#define TARGET_LOAD 80
+#define TARGET_LOAD 75
 /**
  * get_next_freq - Compute a new frequency for a given cpufreq policy.
  * @sg_policy: schedutil policy object to compute the new frequency for.
@@ -303,6 +311,12 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 		freq = next_freq;
 	else
 		freq = map_util_freq(util, freq, max);
+
+	// More aggressive frequency selection for UI tasks
+	if (current->sched_class == &fair_sched_class &&
+	    task_has_rt_policy(current)) {
+		util = mult_frac(util, 100 + TARGET_LOAD, 100);
+	}
 
 	trace_sugov_next_freq(policy->cpu, util, max, freq);
 	if (freq == sg_policy->cached_raw_freq && !sg_policy->need_freq_update)
@@ -576,8 +590,8 @@ static inline bool sugov_cpu_is_busy(struct sugov_cpu *sg_cpu) { return false; }
 #endif /* CONFIG_NO_HZ_COMMON */
 
 #define NL_RATIO 75
-#define DEFAULT_HISPEED_LOAD 90
-#define DEFAULT_CPU0_RTG_BOOST_FREQ 1000000
+#define DEFAULT_HISPEED_LOAD 85
+#define DEFAULT_CPU0_RTG_BOOST_FREQ 1700000
 #define DEFAULT_CPU4_RTG_BOOST_FREQ 0
 #define DEFAULT_CPU7_RTG_BOOST_FREQ 0
 static void sugov_walt_adjust(struct sugov_cpu *sg_cpu, unsigned long *util,
@@ -1231,22 +1245,23 @@ static int sugov_init(struct cpufreq_policy *policy)
 		goto stop_kthread;
 	}
 
-	tunables->up_rate_limit_us = cpufreq_policy_transition_delay_us(policy);
-	tunables->down_rate_limit_us = cpufreq_policy_transition_delay_us(policy);
+	tunables->up_rate_limit_us = DEFAULT_UP_RATE_LIMIT_US;
+	tunables->down_rate_limit_us = DEFAULT_DOWN_RATE_LIMIT_US;
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
-	tunables->hispeed_freq = 0;
 
+	// Set cluster-specific hispeed frequencies
 	switch (policy->cpu) {
-	default:
-	case 0:
+	case 0: // Little cluster
+		tunables->hispeed_freq = 1500000;
 		tunables->rtg_boost_freq = DEFAULT_CPU0_RTG_BOOST_FREQ;
 		break;
-	case 4:
-		tunables->rtg_boost_freq = DEFAULT_CPU4_RTG_BOOST_FREQ;
+	case 6: // Big cluster
+		tunables->hispeed_freq = 2000000;
+		tunables->rtg_boost_freq = DEFAULT_CPU6_RTG_BOOST_FREQ;
 		break;
-	case 7:
-		tunables->rtg_boost_freq = DEFAULT_CPU7_RTG_BOOST_FREQ;
-		break;
+	default:
+		tunables->hispeed_freq = policy->max;
+		tunables->rtg_boost_freq = policy->max;
 	}
 
 	policy->governor_data = sg_policy;

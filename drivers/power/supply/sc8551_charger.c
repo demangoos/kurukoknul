@@ -152,6 +152,28 @@ do {											\
 #define REDUCED_CHARGE_CURRENT_MA 10000
 #define BATTERY_THRESHOLD_PCT 80
 
+#define SC8551_MAX_FCC_UA 5000000  // 5A max
+#define SC8551_REDUCED_FCC_UA 1000000 // 1A for >90% 
+#define SC8551_DEFAULT_FCC_UA 3000000 // 3A default
+#define BATTERY_CAPACITY_THRESHOLD 90
+
+// Meningkatkan batas arus maksimum
+#define SC8551_BUS_OCP_UCP_THRESHOLD    3500 // Dari 2500mA
+#define SC8551_IBUS_LIMIT_MAX           4000 // Dari 3000mA 
+#define SC8551_ICHG_MAX                 5000 // Dari 2500mA
+
+// Thermal throttling thresholds
+static const int THERMAL_LEVELS[] = {
+    4000,  // Normal operation
+    3500,  // Light throttling
+    3000,  // Moderate throttling  
+    2500,  // Heavy throttling
+    2000   // Emergency throttling
+};
+
+static bool screen_is_off = false;
+static int last_charging_current = 0;
+
 struct sc8551_cfg {
 	bool bat_ovp_disable;
 	bool bat_ocp_disable;
@@ -1500,42 +1522,71 @@ static int sc8551_init_device(struct sc8551 *sc)
 	return 0;
 }
 
-static int sc8551_adjust_charging_power(struct sc8551 *sc, int batt_soc)
+static int sc8551_set_adaptive_charging(struct sc8551 *sc, int capacity) 
 {
-	int curr_ma;
+    int target_curr;
+    int ret;
+    bool thermal_limited = false;
 
-	if (batt_soc >= BATTERY_THRESHOLD_PCT) {
-		// Reduce charging current when battery >= 80%
-		curr_ma = REDUCED_CHARGE_CURRENT_MA;
-	} else {
-		// Maximum power at 33W
-		curr_ma = (MAX_CHARGE_POWER_W * 1000) / 4; // Assuming 4V battery voltage
-	}
+    // Basic thermal check
+    if (sc->die_temp >= 85) {
+        thermal_limited = true;
+        pr_info("SC8551: Thermal limiting enabled at %dC\n", sc->die_temp);
+    }
 
-	return sc8551_set_busocp_th(sc, curr_ma);
+    // Set target current based on capacity and screen state  
+    if (capacity >= BATTERY_CAPACITY_THRESHOLD) {
+        target_curr = SC8551_REDUCED_FCC_UA;
+        pr_info("SC8551: Battery > 90%%, reducing FCC to %duA\n", target_curr);
+    } else if (screen_is_off && !thermal_limited) {
+        target_curr = SC8551_MAX_FCC_UA;
+        pr_info("SC8551: Screen off, setting max FCC to %duA\n", target_curr);
+    } else {
+        target_curr = SC8551_DEFAULT_FCC_UA;
+        pr_info("SC8551: Normal charging at %duA\n", target_curr);
+    }
+
+    // Only update if current changed
+    if (target_curr != last_charging_current) {
+        ret = sc8551_set_busocp_th(sc, target_curr/1000); // Fixed function name
+        if (ret < 0) {
+            pr_err("SC8551: Failed to set charging current: %d\n", ret);
+            return ret;
+        }
+        last_charging_current = target_curr;
+    }
+
+    return 0;
 }
 
-static void sc8551_monitor_work(struct work_struct *work)
+static void sc8551_monitor_work(struct work_struct *work) 
 {
-	struct sc8551 *sc = container_of(work, struct sc8551, monitor_work.work);
-	union power_supply_propval val = {0,};
-	int ret;
+    struct sc8551 *sc = container_of(work, struct sc8551, monitor_work.work);
+    union power_supply_propval val = {0,};
+    int ret;
 
-	// Get battery SOC from main battery power supply
-	if (!sc->batt_psy)
-		sc->batt_psy = power_supply_get_by_name("battery");
+    // Get battery capacity
+    if (!sc->batt_psy)
+        sc->batt_psy = power_supply_get_by_name("battery");
 
-	if (sc->batt_psy) {
-		ret = power_supply_get_property(sc->batt_psy,
-					POWER_SUPPLY_PROP_CAPACITY, &val);
-		if (ret == 0) {
-			// Adjust charging power based on battery SOC
-			sc8551_adjust_charging_power(sc, val.intval);
-		}
-	}
+    if (sc->batt_psy) {
+        ret = power_supply_get_property(sc->batt_psy,
+                POWER_SUPPLY_PROP_CAPACITY, &val);
+        if (ret == 0) {
+            sc8551_set_adaptive_charging(sc, val.intval);
+        }
+    }
 
-	schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000)); // Check every 5 seconds
+    schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000));
 }
+
+int sc8551_screen_state_change(bool is_off)
+{
+    screen_is_off = is_off;
+    pr_info("SC8551: Screen state changed to: %s\n", is_off ? "OFF" : "ON");
+    return 0;
+}
+EXPORT_SYMBOL(sc8551_screen_state_change);
 
 static int sc8551_set_present(struct sc8551 *sc, bool present)
 {

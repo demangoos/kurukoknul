@@ -29,6 +29,17 @@ CYAN="\033[1;36m"
 WHITE="\033[1;37m"
 BOLD="\033[1m"
 NC="\033[0m" # No Color
+ORANGE="\033[38;5;208m"
+PURPLE="\033[38;5;141m"
+TEAL="\033[38;5;51m"
+
+# Modern RGB color codes
+ORANGE_RGB="\e[38;2;255;165;0m"
+PURPLE_RGB="\e[38;2;147;112;219m"
+TEAL_RGB="\e[38;2;0;206;209m"
+BLUE_RGB="\e[38;2;30;144;255m"
+GREEN_RGB="\e[38;2;50;205;50m"
+RED_RGB="\e[38;2;255;69;0m"
 
 # ═══════════════════════════════════════════════
 # Progress bar function
@@ -68,49 +79,50 @@ show_progress() {
 # ═══════════════════════════════════════════════
 print_header() {
   clear
-  echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${CYAN}║                                                                ║${NC}"
-  echo -e "${CYAN}║  ${BOLD}${MAGENTA}🥭 KERNEL BUILD SCRIPT ${YELLOW}v2.0${NC} ${CYAN}║${NC}"
-  echo -e "${CYAN}║  ${WHITE}Automated kernel compilation tool     ${NC}    ${CYAN}║${NC}"
-  echo -e "${CYAN}║                                                                ║${NC}"
-  echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
+  echo -e "${PURPLE_RGB}╔════════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${PURPLE_RGB}║${NC}                                                        ${PURPLE_RGB}║${NC}"
+  echo -e "${PURPLE_RGB}║${NC}  ${TEAL_RGB}🌊 NyxFlow KERNEL BUILDER ${ORANGE_RGB}v2.1${NC}                  ${PURPLE_RGB}║${NC}"
+  echo -e "${PURPLE_RGB}║${NC}  ${WHITE}Modern kernel compilation automation${NC}               ${PURPLE_RGB}║${NC}"
+  echo -e "${PURPLE_RGB}║${NC}                                                        ${PURPLE_RGB}║${NC}"
+  echo -e "${PURPLE_RGB}╚════════════════════════════════════════════════════════════╝${NC}"
   echo ""
 }
 
 print_info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
+  echo -e "${BLUE_RGB}[INFO]${NC} $1"
 }
 
 print_success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
+  echo -e "${GREEN_RGB}[SUCCESS]${NC} ✓ $1"
 }
 
 print_warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1"
+  echo -e "${ORANGE_RGB}[WARNING]${NC} ⚠ $1"
 }
 
 print_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
+  echo -e "${RED_RGB}[ERROR]${NC} ✖ $1"
 }
 
 print_section() {
   echo ""
-  echo -e "${CYAN}══════════════════ ${BOLD}$1${NC} ${CYAN}══════════════════${NC}"
+  echo -e "${TEAL_RGB}┌─────── ${BOLD}$1${NC} ${TEAL_RGB}───────┐${NC}"
 }
 
 print_build_success() {
   echo ""
-  echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
-  echo -e "${GREEN}║                                                                ║${NC}"
-  echo -e "${GREEN}║  ${BOLD}${WHITE}✅ BUILD SUCCESSFULLY COMPLETED!${NC}                           ${GREEN}║${NC}"
-  echo -e "${GREEN}║                                                                ║${NC}"
-  echo -e "${GREEN}║  ${WHITE}Device: ${YELLOW}${DEVICE_MODEL} (${DEVICE_CODENAME})${NC}                      ${GREEN}║${NC}"
-  echo -e "${GREEN}║  ${WHITE}Kernel: ${YELLOW}${KERNEL_NAME} ${SUBLEVEL} ${KERNEL_VARIANT}${NC}                           ${GREEN}║${NC}"
-  echo -e "${GREEN}║  ${WHITE}Build time: ${YELLOW}${hours}h ${minutes}m ${seconds}s${NC}                               ${GREEN}║${NC}"
-  echo -e "${GREEN}║  ${WHITE}Compiler: ${YELLOW}${ClangName}${NC}                                         ${GREEN}║${NC}"
-  echo -e "${GREEN}║  ${WHITE}Output: ${YELLOW}~/${KERNEL_ZIP}${VARIANT}.zip${NC}                           ${GREEN}║${NC}"
-  echo -e "${GREEN}║                                                                ║${NC}"
-  echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${GREEN}┃${NC}                                                              ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${BOLD}${WHITE}✅ BUILD COMPLETED SUCCESSFULLY!${NC}                          ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}                                                              ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Device:${NC} ${ORANGE}${DEVICE_MODEL} (${DEVICE_CODENAME})${NC}                    ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Kernel:${NC} ${ORANGE}${KERNEL_NAME} ${SUBLEVEL} ${KERNEL_VARIANT}${NC}                         ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Build time:${NC} ${ORANGE}${hours}h ${minutes}m ${seconds}s${NC}                             ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Compiler:${NC} ${ORANGE}${ClangName}${NC}                                       ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Local file:${NC} ${ORANGE}~/${KERNEL_ZIP}${VARIANT}.zip${NC}                     ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}  ${WHITE}Download URL:${NC} ${ORANGE}$(cat ~/kernel_url.txt)${NC}              ${GREEN}┃${NC}"
+  echo -e "${GREEN}┃${NC}                                                              ${GREEN}┃${NC}"
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo ""
 }
 
@@ -430,7 +442,7 @@ function kernelsu() {
 DEVICE_MODEL="Poco X5 5G & Redmi Note 12 5G"
 DEVICE_CODENAME="stone"
 BUILD_TIME="$(TZ="Asia/Jakarta" date "+%Y%m%d")"
-export DEVICE_DEFCONFIG="moonstone_defconfig"
+export DEVICE_DEFCONFIG="mangoos_defconfig"
 export ARCH="arm64"
 export KBUILD_BUILD_USER="mangoos"
 export KBUILD_BUILD_HOST="github.com"
@@ -526,14 +538,67 @@ compile() {
 }
 
 # ═══════════════════════════════════════════════
+# Upload function
+# ═══════════════════════════════════════════════
+upload_to_tempsh() {
+    local file="$1"
+    print_section "File Upload"
+    
+    print_info "Uploading to temp.sh..."
+    print_info "File: ${file}"
+    print_info "Size: $(du -h "$file" | cut -f1)"
+
+    # Upload with detailed error logging
+    local temp_response_file=$(mktemp)
+    curl -s -F "file=@$file" https://temp.sh/upload > "$temp_response_file" 2>/dev/null
+    local curl_exit=$?
+
+    # Log the full response for debugging
+    echo -e "${BLUE_RGB}[DEBUG] Curl Exit Code: $curl_exit${NC}"
+    echo -e "${BLUE_RGB}[DEBUG] Response Content:${NC}"
+    cat "$temp_response_file" | tee upload_debug.log
+
+    # Extract URL properly - temp.sh returns JSON with the URL
+    if [ $curl_exit -eq 0 ]; then
+        # Parse JSON response to get URL
+        local url=$(grep -o '"url":"[^"]*"' "$temp_response_file" | sed 's/"url":"//;s/"$//')
+        
+        # If URL not found with JSON parsing, try direct content
+        if [ -z "$url" ]; then
+            url=$(cat "$temp_response_file")
+            # Clean URL (trim whitespace)
+            url=$(echo "$url" | tr -d '[:space:]')
+        fi
+        
+        if [ ! -z "$url" ]; then
+            print_success "Upload successful! 🚀"
+            echo -e "${TEAL_RGB}┌────── Upload Details ──────┐${NC}"
+            echo -e "${TEAL_RGB}│${NC} URL: ${ORANGE_RGB}$url${NC}"
+            echo -e "${TEAL_RGB}│${NC} Saved to: ${ORANGE_RGB}~/kernel_url.txt${NC}"
+            echo -e "${TEAL_RGB}└──────────────────────────┘${NC}"
+            echo "$url" > ~/kernel_url.txt
+        else
+            print_error "Failed to get URL from response"
+            echo -e "${RED_RGB}Check upload_debug.log for details${NC}"
+        fi
+    else
+        print_error "Upload failed with exit code: $curl_exit"
+        echo -e "${RED_RGB}Error details saved to upload_debug.log${NC}"
+    fi
+    
+    # Clean up temp file
+    rm -f "$temp_response_file"
+}
+# ═══════════════════════════════════════════════
 # Zipping function
 # ═══════════════════════════════════════════════
 KERNEL_ZIP="${KERNEL_NAME}-${DEVICE_CODENAME}-${BUILD_TIME}"
 
 function zipping() {
-    print_section "Creating Flashable Zip"
+    print_section "Creating & Uploading Flashable Zip"
     
     cd ${AnyKernelPath} || exit 1
+    
     if [ "$KERNELSU" = "yes" ]; then
       VARIANT="-KernelSU"
       print_info "Preparing KernelSU variant..."
@@ -550,6 +615,10 @@ function zipping() {
     
     print_info "Moving zip to home directory..."
     mv "${KERNEL_ZIP}${VARIANT}.zip" ~/
+    
+    # Upload to temp.sh
+    upload_to_tempsh ~/"${KERNEL_ZIP}${VARIANT}.zip"
+    
     print_success "Kernel package saved to ~/${KERNEL_ZIP}${VARIANT}.zip"
     
     cd ..

@@ -24,21 +24,21 @@ static DEFINE_SPINLOCK(tz_lock);
 static DEFINE_SPINLOCK(sample_lock);
 static DEFINE_SPINLOCK(suspend_lock);
 /*
- * FLOOR is 5msec to capture up to 3 re-draws
+ * FLOOR is 3msec to capture up to 3 re-draws
  * per frame for 60fps content.
  */
-#define FLOOR		        5000
+#define FLOOR		        3000
 /*
- * MIN_BUSY is 1 msec for the sample to be sent
+ * MIN_BUSY is 0.5 msec for the sample to be sent
  */
-#define MIN_BUSY		1000
+#define MIN_BUSY		500
 #define MAX_TZ_VERSION		0
 
 /*
- * CEILING is 50msec, larger than any standard
+ * CEILING is 40msec, larger than any standard
  * frame length, but less than the idle timer.
  */
-#define CEILING			50000
+#define CEILING			40000
 #define TZ_RESET_ID		0x3
 #define TZ_UPDATE_ID		0x4
 #define TZ_INIT_ID		0x6
@@ -54,6 +54,15 @@ static DEFINE_SPINLOCK(suspend_lock);
 
 #define TAG "msm_adreno_tz: "
 
+#define HIST_SIZE 5
+#define HIST_THRESHOLD 3
+
+/* GPU frequency history tracking structure */
+struct freq_history {
+    unsigned int freqs[HIST_SIZE];  /* Array to store frequency history */
+    unsigned int idx;               /* Current index in the circular buffer */
+};
+
 static u64 suspend_time;
 static u64 suspend_start;
 static unsigned long acc_total, acc_relative_busy;
@@ -65,6 +74,11 @@ static void do_partner_suspend_event(struct work_struct *work);
 static void do_partner_resume_event(struct work_struct *work);
 
 static struct workqueue_struct *workqueue;
+
+static struct freq_history freq_hist = {
+    .freqs = {0},
+    .idx = 0
+};
 
 /*
  * Returns GPU suspend time in millisecond.
@@ -176,15 +190,13 @@ void compute_work_load(struct devfreq_dev_status *stats,
 	u64 busy;
 
 	spin_lock(&sample_lock);
-	/*
-	 * Keep collecting the stats till the client
-	 * reads it. Average of all samples and reset
-	 * is done when the entry is read
-	 */
-	acc_total += stats->total_time;
+
+	/* Use exponential moving average for smoother stats */
+	acc_total = (acc_total * 7 + stats->total_time) / 8;
+
 	busy = (u64)stats->busy_time * stats->current_frequency;
 	do_div(busy, devfreq->profile->freq_table[0]);
-	acc_relative_busy += busy;
+	acc_relative_busy = (acc_relative_busy * 7 + busy) / 8;
 
 	spin_unlock(&sample_lock);
 }
@@ -423,6 +435,25 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 		level += val;
 		level = max(level, 0);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
+	}
+
+	/* Apply hysteresis */
+	{
+		int i;
+		int count = 0;
+
+		freq_hist.freqs[freq_hist.idx] = *freq;
+		freq_hist.idx = (freq_hist.idx + 1) % HIST_SIZE;
+
+		for (i = 0; i < HIST_SIZE; i++) {
+			if (freq_hist.freqs[i] == *freq)
+				count++;
+		}
+
+		/* Only change frequency if we see a consistent pattern */
+		if (count < HIST_THRESHOLD) {
+			*freq = devfreq->previous_freq;
+		}
 	}
 
 	*freq = devfreq->profile->freq_table[level];
