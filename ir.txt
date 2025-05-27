@@ -1,0 +1,1037 @@
+[ 8100.888325] IRQ 6: no longer affine to CPU4
+[ 8100.950153] [soft_i][0x281a4e25d4][11:25:09.829699] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8101.183302] IRQ 6: no longer affine to CPU3
+[ 8101.540992] IRQ 6: no longer affine to CPU3
+[ 8101.894789] IRQ 6: no longer affine to CPU3
+[ 8101.965828] [soft_i][0x283bef64fc][11:25:39.215927] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8102.304544] [soft_i][0x283f36fac5][11:25:42.081711] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8104.697593] irq_migrate_all_off_this_cpu: 3 callbacks suppressed
+[ 8104.697599] IRQ 6: no longer affine to CPU3
+[ 8104.765877] [soft_i][0x28422497f8][11:25:44.640394] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8104.993226] IRQ 6: no longer affine to CPU1
+[ 8105.372881] IRQ 6: no longer affine to CPU7
+[ 8105.820955] IRQ 6: no longer affine to CPU4
+[ 8105.870567] [soft_i][0x2850e2730c][11:25:57.521821] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8106.143966] [soft_i][0x285be8c637][11:26:07.155357] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8106.359367] IRQ 6: no longer affine to CPU3
+[ 8106.412627] [soft_i][0x285cbc37bd][11:26:07.877084] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8106.855922] IRQ 6: no longer affine to CPU5
+[ 8106.908746] IRQ 6: no longer affine to CPU1
+[ 8106.964531] [soft_i][0x2862b45765][11:26:13.093079] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8109.153711] IRQ 175: no longer affine to CPU1
+[ 8109.162483] IRQ 6: no longer affine to CPU3
+[ 8110.689943] IRQ 6: no longer affine to CPU6
+[ 8110.748170] [soft_i][0x286eaba540][11:26:23.549158] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8111.080028] IRQ 6: no longer affine to CPU4
+[ 8111.374645] IRQ 6: no longer affine to CPU7
+[ 8111.475284] IRQ 6: no longer affine to CPU4
+[ 8111.796816] IRQ 6: no longer affine to CPU3
+[ 8112.280991] IRQ 6: no longer affine to CPU6
+[ 8113.736803] IRQ 1: no longer affine to CPU3
+[ 8113.802032] [soft_i][0x28a11135ea][11:27:07.586500] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8115.043415] IRQ 6: no longer affine to CPU3
+[ 8116.563777] IRQ 6: no longer affine to CPU2
+[ 8118.827634] IRQ 1: no longer affine to CPU1
+[ 8118.833663] IRQ 6: no longer affine to CPU2
+[ 8119.174433] IRQ 6: no longer affine to CPU7
+[ 8119.582288] IRQ 6: no longer affine to CPU6
+[ 8119.854737] IRQ 6: no longer affine to CPU4
+[ 8120.245987] IRQ 6: no longer affine to CPU5
+[ 8120.582953] IRQ 6: no longer affine to CPU3
+[ 8120.651734] [soft_i][0x291c1d13d7][11:28:55.106045] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8122.963099] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8123.873250] IRQ 6: no longer affine to CPU5
+[ 8124.242707] gf_spi: gf_irq start 
+[ 8124.262477] gf_spi: gf_irq start 
+[ 8124.341620] type=1400 audit(1748345344.003:1119944): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8124.360962] type=1400 audit(1748345344.023:1119945): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8124.367837] type=1400 audit(1748345344.027:1119946): avc:  denied  { open } for  comm="binder:805_3" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8124.369877] type=1400 audit(1748345344.027:1119947): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8124.605126] gf_spi: gf_irq start 
+[ 8124.624821] gf_spi: gf_irq start 
+[ 8124.657580] gf_spi: gf_irq start 
+[ 8124.677345] gf_spi: gf_irq start 
+[ 8124.697136] gf_spi: gf_irq start 
+[ 8130.514227] (virq:irq_count)- 4:6730551 14:2446699 20:1409429 229:1317478 155:1207032 197:1183890 6:986981 165:462243 32:390140 168:295503 
+[ 8130.514276] (cpu:irq_count)- 0:7397089 1:4865964 2:1417589 3:1350009 4:203060 5:206041 6:927037 7:932545 
+[ 8130.514302] (ipi:irq_count)- 0:28984098 1:8176216 2:0 3:0 4:27372 5:1290305 6:0 
+[ 8132.909712] type=1400 audit(1748345352.575:1120006): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8132.918848] type=1400 audit(1748345352.575:1120007): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8132.919083] type=1400 audit(1748345352.583:1120008): avc:  denied  { open } for  comm="binder:805_3" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8132.920797] type=1400 audit(1748345352.583:1120009): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8132.922690] type=1400 audit(1748345352.587:1120010): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8139.986991] (virq:irq_count)- 4:6739606 14:2449470 20:1414785 229:1317594 155:1210687 197:1186567 6:988149 165:462642 32:391407 168:296107 
+[ 8139.987013] (cpu:irq_count)- 0:7416938 1:4868394 2:1419461 3:1351895 4:203360 5:206360 6:928025 7:933542 
+[ 8139.987023] (ipi:irq_count)- 0:29014290 1:8190889 2:0 3:0 4:27402 5:1296604 6:0 
+[ 8147.334057] IRQ 6: no longer affine to CPU4
+[ 8149.311499] gf_spi: gf_irq start 
+[ 8149.457395] (virq:irq_count)- 4:6748502 14:2451752 20:1415690 229:1317707 155:1215257 197:1188750 6:989672 165:463071 32:392378 168:296712 
+[ 8149.457414] (cpu:irq_count)- 0:7431883 1:4871080 2:1421406 3:1354055 4:203582 5:206529 6:928911 7:934360 
+[ 8149.457423] (ipi:irq_count)- 0:29040253 1:8200419 2:0 3:0 4:27452 5:1299716 6:0 
+[ 8149.676766] gf_spi: gf_irq start 
+[ 8149.913532] type=1400 audit(1748345369.579:1120147): avc:  denied  { read } for  comm="binder:805_3" name="wakeup54" dev="sysfs" ino=70219 scontext=u:r:system_suspend:s0 tcontext=u:object_r:vendor_sysfs_battery_supply:s0 tclass=dir permissive=0
+[ 8149.913892] type=1400 audit(1748345369.579:1120148): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/virtual/misc/msm_amrwbplus/wakeup16" dev="sysfs" ino=50609 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8149.914214] type=1400 audit(1748345369.579:1120149): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-0066/wakeup/wakeup44" dev="sysfs" ino=65908 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8149.914418] type=1400 audit(1748345369.579:1120150): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/1c40000.qcom,spmi/spmi-0/spmi0-00/1c40000.qcom,spmi:qcom,pm6125@0:qcom,power-on@800/wakeup/wakeup0" dev="sysfs" ino=33566 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8149.916125] type=1400 audit(1748345369.579:1120151): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/virtual/misc/msm_wma/wakeup24" dev="sysfs" ino=50926 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8150.805952] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8155.863826] IRQ 1: no longer affine to CPU1
+[ 8155.863842] IRQ 6: no longer affine to CPU1
+[ 8155.863874] IRQ 30: no longer affine to CPU1
+[ 8158.315413] IRQ 20: no longer affine to CPU1
+[ 8158.320023] IRQ 6: no longer affine to CPU2
+[ 8159.841393] IRQ 6: no longer affine to CPU1
+[ 8159.927787] [soft_i][0x2969ee5f8e][11:30:03.104068] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8160.293770] gf_spi: gf_irq start 
+[ 8160.299747] gf_spi: gf_irq start 
+[ 8160.316854] gf_spi: gf_irq start 
+[ 8160.336211] gf_spi: gf_irq start 
+[ 8160.355689] gf_spi: gf_irq start 
+[ 8160.707320] type=1400 audit(1748345405.359:1120413): avc:  denied  { open } for  comm="binder:805_4" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8160.707478] type=1400 audit(1748345405.359:1120414): avc:  denied  { open } for  comm="binder:805_4" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8160.707564] type=1400 audit(1748345405.359:1120415): avc:  denied  { open } for  comm="binder:805_4" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8160.707667] type=1400 audit(1748345405.359:1120416): avc:  denied  { open } for  comm="binder:805_4" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8160.707750] type=1400 audit(1748345405.359:1120417): avc:  denied  { read } for  comm="binder:805_4" name="wakeup54" dev="sysfs" ino=70219 scontext=u:r:system_suspend:s0 tcontext=u:object_r:vendor_sysfs_battery_supply:s0 tclass=dir permissive=0
+[ 8160.735211] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8161.010542] gf_spi: gf_irq start 
+[ 8161.773026] IRQ 6: no longer affine to CPU4
+[ 8162.379932] gf_spi: gf_irq start 
+[ 8162.399500] gf_spi: gf_irq start 
+[ 8162.786070] gf_spi: gf_irq start 
+[ 8162.805776] gf_spi: gf_irq start 
+[ 8162.825553] gf_spi: gf_irq start 
+[ 8162.855037] gf_spi: gf_irq start 
+[ 8162.874528] type=1400 audit(1748345407.527:1120454): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8162.874696] gf_spi: gf_irq start 
+[ 8162.876486] type=1400 audit(1748345407.531:1120455): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8162.881781] type=1400 audit(1748345407.535:1120456): avc:  denied  { open } for  comm="binder:805_3" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8163.689821] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8168.738247] IRQ 14: no longer affine to CPU1
+[ 8168.738406] IRQ 175: no longer affine to CPU1
+[ 8168.749590] IRQ 6: no longer affine to CPU3
+[ 8168.800637] [soft_i][0x297a341066][11:30:17.322959] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8169.334221] IRQ 6: no longer affine to CPU5
+[ 8174.915150] IRQ 6: no longer affine to CPU4
+[ 8178.388170] (virq:irq_count)- 4:6772117 14:2458409 20:1417971 229:1318235 
+[ 8178.388644] (cpu:irq_count)- 0:7465562 1:4878932 2:1427097 3:1359897 4:204698 5:207573 6:929962 7:935333 
+[ 8178.388671] (ipi:irq_count)- 0:29109175 1:8224473 2:0 3:0 4:27541 5:1305290 6:0 
+[ 8187.857858] (virq:irq_count)- 4:6773345 14:2458803 20:1418029 229:1318349 155:1215502 197:1194962 6:994467 165:471375 32:394167 168:297817 
+[ 8187.857911] (cpu:irq_count)- 0:7467422 1:4879458 2:1427814 3:1360540 4:204698 5:207573 6:929971 7:935338 
+[ 8187.857937] (ipi:irq_count)- 0:29111509 1:8226234 2:0 3:0 4:27597 5:1305768 6:0 
+[ 8197.329244] (virq:irq_count)- 4:6774773 14:2459953 20:1418264 229:1318463 155:1215502 197:1196024 6:995402 165:471708 32:394167 168:297817 
+[ 8197.329294] (cpu:irq_count)- 0:7471009 1:4879867 2:1428626 3:1361249 4:204698 5:207573 6:929982 7:935345 
+[ 8197.329320] (ipi:irq_count)- 0:29114338 1:8228123 2:0 3:0 4:27649 5:1306242 6:0 
+[ 8200.631730] IRQ 6: no longer affine to CPU6
+[ 8201.040890] IRQ 6: no longer affine to CPU3
+[ 8201.384471] IRQ 6: no longer affine to CPU5
+[ 8202.596620] IRQ 6: no longer affine to CPU6
+[ 8202.661228] [soft_i][0x2a3542575e][11:33:00.774786] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8202.934076] IRQ 6: no longer affine to CPU5
+[ 8202.988108] [soft_i][0x2a56696e6f][11:33:29.744053] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8203.493210] IRQ 6: no longer affine to CPU5
+[ 8203.505498] IRQ 1: no longer affine to CPU1
+[ 8204.941094] IRQ 6: no longer affine to CPU2
+[ 8205.015941] [soft_i][0x2a7a63b1b7][11:34:01.181750] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8205.301511] IRQ 6: no longer affine to CPU2
+[ 8206.251374] IRQ 6: no longer affine to CPU5
+[ 8208.111756] IRQ 6: no longer affine to CPU5
+[ 8214.737311] (virq:irq_count)- 4:6784275 14:2464047 20:1429655 229:1318956 155:1215502 197:1199723 6:997319 165:477474 32:394193 168:297817 
+[ 8214.737357] (cpu:irq_count)- 0:7500138 1:4882510 2:1430849 3:1363333 4:205299 5:208225 6:930528 7:935855 
+[ 8214.737382] (ipi:irq_count)- 0:29153795 1:8245482 2:0 3:0 4:27769 5:1308454 6:0 
+[ 8214.859779] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8215.091597] IRQ 6: no longer affine to CPU5
+[ 8215.232088] IRQ 6: no longer affine to CPU5
+[ 8215.971609] IRQ 6: no longer affine to CPU4
+[ 8217.692131] IRQ 6: no longer affine to CPU4
+[ 8218.492333] IRQ 6: no longer affine to CPU5
+[ 8224.207898] (virq:irq_count)- 4:6793729 14:2466621 20:1429990 229:1320171 155:1215502 197:1201114 6:998235 165:478002 32:394666 168:298180 
+[ 8224.207942] (cpu:irq_count)- 0:7509236 1:4885750 2:1433503 3:1365319 4:205581 5:208522 6:930658 7:935995 
+[ 8224.207968] (ipi:irq_count)- 0:29173059 1:8253000 2:0 3:0 4:27777 5:1309229 6:0 
+[ 8225.133466] IRQ 6: no longer affine to CPU5
+[ 8233.680316] (virq:irq_count)- 4:6795980 14:2467305 20:1430251 229:1320289 155:1215502 197:1201692 6:999317 165:478521 32:394731 168:298229 
+[ 8233.680365] (cpu:irq_count)- 0:7512191 1:4886894 2:1434395 3:1366173 4:205602 5:208553 6:930700 7:936011 
+[ 8233.680390] (ipi:irq_count)- 0:29177832 1:8255585 2:0 3:0 4:27847 5:1309739 6:0 
+[ 8239.794069] IRQ 6: no longer affine to CPU5
+[ 8243.151891] (virq:irq_count)- 4:6800879 14:2469815 20:1431066 229:1321273 155:1215502 197:1203263 6:1000251 165:478992 32:394731 168:298229 
+[ 8243.151931] (cpu:irq_count)- 0:7519511 1:4889201 2:1436046 3:1367249 4:205667 5:208597 6:930720 7:936079 
+[ 8243.151953] (ipi:irq_count)- 0:29186830 1:8259354 2:0 3:0 4:27882 5:1310292 6:0 
+[ 8243.709745] IRQ 6: no longer affine to CPU1
+[ 8243.709810] IRQ 32: no longer affine to CPU1
+[ 8243.710090] IRQ 165: no longer affine to CPU1
+[ 8243.710123] IRQ 175: no longer affine to CPU1
+[ 8243.730719] IRQ 1: no longer affine to CPU3
+[ 8244.938014] IRQ 6: no longer affine to CPU3
+[ 8245.003228] [soft_i][0x2b2fea888d][11:36:39.802215] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8245.982777] IRQ 6: no longer affine to CPU7
+[ 8246.015918] gf_spi: gf_irq start 
+[ 8246.024899] gf_spi: gf_irq start 
+[ 8246.045181] gf_spi: gf_irq start 
+[ 8246.064179] gf_spi: gf_irq start 
+[ 8246.087120] gf_spi: gf_irq start 
+[ 8246.212610] IRQ 6: no longer affine to CPU4
+[ 8246.366238] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8246.471106] gf_spi: gf_irq start 
+[ 8246.490883] gf_spi: gf_irq start 
+[ 8246.523024] gf_spi: gf_irq start 
+[ 8246.542766] gf_spi: gf_irq start 
+[ 8246.569942] gf_spi: gf_irq start 
+[ 8246.615562] gf_spi: gf_irq start 
+[ 8246.635308] gf_spi: gf_irq start 
+[ 8246.667553] gf_spi: gf_irq start 
+[ 8246.703889] gf_spi: gf_irq start 
+[ 8246.731307] gf_spi: gf_irq start 
+[ 8246.765616] gf_spi: gf_irq start 
+[ 8246.785392] gf_spi: gf_irq start 
+[ 8246.813324] gf_spi: gf_irq start 
+[ 8246.833083] gf_spi: gf_irq start 
+[ 8246.869545] gf_spi: gf_irq start 
+[ 8246.907338] gf_spi: gf_irq start 
+[ 8246.927036] gf_spi: gf_irq start 
+[ 8246.960694] gf_spi: gf_irq start 
+[ 8247.004056] gf_spi: gf_irq start 
+[ 8247.044121] gf_spi: gf_irq start 
+[ 8247.050857] IRQ 6: no longer affine to CPU5
+[ 8247.079847] gf_spi: gf_irq start 
+[ 8247.120320] gf_spi: gf_irq start 
+[ 8247.162052] gf_spi: gf_irq start 
+[ 8247.203220] gf_spi: gf_irq start 
+[ 8247.222916] gf_spi: gf_irq start 
+[ 8247.255519] gf_spi: gf_irq start 
+[ 8247.283995] gf_spi: gf_irq start 
+[ 8247.303738] gf_spi: gf_irq start 
+[ 8247.335585] gf_spi: gf_irq start 
+[ 8247.380187] gf_spi: gf_irq start 
+[ 8247.418521] gf_spi: gf_irq start 
+[ 8247.459231] gf_spi: gf_irq start 
+[ 8247.499087] gf_spi: gf_irq start 
+[ 8247.538525] gf_spi: gf_irq start 
+[ 8247.580555] gf_spi: gf_irq start 
+[ 8247.624431] gf_spi: gf_irq start 
+[ 8247.667617] gf_spi: gf_irq start 
+[ 8247.708588] gf_spi: gf_irq start 
+[ 8247.750682] gf_spi: gf_irq start 
+[ 8247.796687] gf_spi: gf_irq start 
+[ 8247.816408] gf_spi: gf_irq start 
+[ 8247.846627] gf_spi: gf_irq start 
+[ 8247.875689] gf_spi: gf_irq start 
+[ 8247.921694] gf_spi: gf_irq start 
+[ 8247.963086] gf_spi: gf_irq start 
+[ 8248.011132] gf_spi: gf_irq start 
+[ 8248.941852] gf_spi: gf_irq start 
+[ 8248.961552] gf_spi: gf_irq start 
+[ 8249.004360] gf_spi: gf_irq start 
+[ 8249.037243] gf_spi: gf_irq start 
+[ 8249.070744] IRQ 6: no longer affine to CPU4
+[ 8249.077430] gf_spi: gf_irq start 
+[ 8249.116661] gf_spi: gf_irq start 
+[ 8249.199453] gf_spi: gf_irq start 
+[ 8249.279324] gf_spi: gf_irq start 
+[ 8249.361134] gf_spi: gf_irq start 
+[ 8249.451239] gf_spi: gf_irq start 
+[ 8249.538346] gf_spi: gf_irq start 
+[ 8250.332406] gf_spi: gf_irq start 
+[ 8250.418446] gf_spi: gf_irq start 
+[ 8250.437832] gf_spi: gf_irq start 
+[ 8250.524206] gf_spi: gf_irq start 
+[ 8250.612375] gf_spi: gf_irq start 
+[ 8250.633074] gf_spi: gf_irq start 
+[ 8250.653551] gf_spi: gf_irq start 
+[ 8250.734454] gf_spi: gf_irq start 
+[ 8250.831683] gf_spi: gf_irq start 
+[ 8250.911671] gf_spi: gf_irq start 
+[ 8250.997767] gf_spi: gf_irq start 
+[ 8251.092427] gf_spi: gf_irq start 
+[ 8251.129546] gf_spi: gf_irq start 
+[ 8251.218764] gf_spi: gf_irq start 
+[ 8251.238552] gf_spi: gf_irq start 
+[ 8251.315622] gf_spi: gf_irq start 
+[ 8251.402022] gf_spi: gf_irq start 
+[ 8251.421825] gf_spi: gf_irq start 
+[ 8251.504366] gf_spi: gf_irq start 
+[ 8251.530764] IRQ 6: no longer affine to CPU4
+[ 8251.590371] gf_spi: gf_irq start 
+[ 8251.680893] gf_spi: gf_irq start 
+[ 8251.766895] gf_spi: gf_irq start 
+[ 8251.849764] gf_spi: gf_irq start 
+[ 8251.937881] gf_spi: gf_irq start 
+[ 8251.957626] gf_spi: gf_irq start 
+[ 8252.056301] gf_spi: gf_irq start 
+[ 8252.147152] gf_spi: gf_irq start 
+[ 8252.230750] gf_spi: gf_irq start 
+[ 8252.250221] gf_spi: gf_irq start 
+[ 8252.339078] gf_spi: gf_irq start 
+[ 8252.430466] gf_spi: gf_irq start 
+[ 8252.519367] gf_spi: gf_irq start 
+[ 8252.599759] gf_spi: gf_irq start 
+[ 8252.681341] gf_spi: gf_irq start 
+[ 8252.761571] gf_spi: gf_irq start 
+[ 8252.991532] IRQ 6: no longer affine to CPU5
+[ 8253.271210] gf_spi: gf_irq start 
+[ 8253.362441] gf_spi: gf_irq start 
+[ 8253.450235] gf_spi: gf_irq start 
+[ 8253.537618] gf_spi: gf_irq start 
+[ 8253.627554] gf_spi: gf_irq start 
+[ 8253.707834] gf_spi: gf_irq start 
+[ 8253.785915] gf_spi: gf_irq start 
+[ 8253.805487] gf_spi: gf_irq start 
+[ 8253.873872] gf_spi: gf_irq start 
+[ 8253.951926] gf_spi: gf_irq start 
+[ 8254.020561] gf_spi: gf_irq start 
+[ 8254.041134] gf_spi: gf_irq start 
+[ 8254.127268] gf_spi: gf_irq start 
+[ 8254.211499] gf_spi: gf_irq start 
+[ 8254.299078] gf_spi: gf_irq start 
+[ 8254.381745] gf_spi: gf_irq start 
+[ 8254.471348] gf_spi: gf_irq start 
+[ 8254.559705] gf_spi: gf_irq start 
+[ 8254.646414] gf_spi: gf_irq start 
+[ 8254.664247] gf_spi: gf_irq start 
+[ 8254.741253] gf_spi: gf_irq start 
+[ 8254.761015] gf_spi: gf_irq start 
+[ 8254.832302] gf_spi: gf_irq start 
+[ 8254.917774] gf_spi: gf_irq start 
+[ 8254.991656] gf_spi: gf_irq start 
+[ 8255.064684] gf_spi: gf_irq start 
+[ 8255.141506] gf_spi: gf_irq start 
+[ 8255.220096] gf_spi: gf_irq start 
+[ 8255.239620] gf_spi: gf_irq start 
+[ 8255.309001] gf_spi: gf_irq start 
+[ 8255.329218] gf_spi: gf_irq start 
+[ 8255.405392] gf_spi: gf_irq start 
+[ 8255.439311] (virq:irq_count)- 4:6812907 14:2474276 20:1434957 229:1321681 155:1216914 197:1207212 6:1001627 165:482469 32:395719 168:298596 
+[ 8255.439396] (cpu:irq_count)- 0:7540799 1:4893812 2:1438110 3:1369474 4:206308 5:209342 6:932216 7:937625 
+[ 8255.439421] (ipi:irq_count)- 0:29225207 1:8274396 2:0 3:0 4:27921 5:1314488 6:0 
+[ 8255.477087] gf_spi: gf_irq start 
+[ 8255.509380] gf_spi: gf_irq start 
+[ 8255.529146] gf_spi: gf_irq start 
+[ 8255.602687] gf_spi: gf_irq start 
+[ 8255.621986] gf_spi: gf_irq start 
+[ 8255.691465] gf_spi: gf_irq start 
+[ 8255.772118] gf_spi: gf_irq start 
+[ 8255.845758] gf_spi: gf_irq start 
+[ 8255.866184] gf_spi: gf_irq start 
+[ 8255.947376] gf_spi: gf_irq start 
+[ 8256.022680] gf_spi: gf_irq start 
+[ 8256.042046] gf_spi: gf_irq start 
+[ 8256.110727] gf_spi: gf_irq start 
+[ 8256.196839] gf_spi: gf_irq start 
+[ 8256.282704] gf_spi: gf_irq start 
+[ 8256.361775] gf_spi: gf_irq start 
+[ 8256.381349] gf_spi: gf_irq start 
+[ 8256.451109] IRQ 6: no longer affine to CPU5
+[ 8256.459579] gf_spi: gf_irq start 
+[ 8256.535598] gf_spi: gf_irq start 
+[ 8256.614468] gf_spi: gf_irq start 
+[ 8256.689873] gf_spi: gf_irq start 
+[ 8256.766714] gf_spi: gf_irq start 
+[ 8256.786510] gf_spi: gf_irq start 
+[ 8256.869790] gf_spi: gf_irq start 
+[ 8256.889579] gf_spi: gf_irq start 
+[ 8256.970875] gf_spi: gf_irq start 
+[ 8257.056309] gf_spi: gf_irq start 
+[ 8257.076005] gf_spi: gf_irq start 
+[ 8257.168707] gf_spi: gf_irq start 
+[ 8257.251012] gf_spi: gf_irq start 
+[ 8257.327373] gf_spi: gf_irq start 
+[ 8257.408292] gf_spi: gf_irq start 
+[ 8257.489392] gf_spi: gf_irq start 
+[ 8257.573066] gf_spi: gf_irq start 
+[ 8257.656591] gf_spi: gf_irq start 
+[ 8257.676374] gf_spi: gf_irq start 
+[ 8257.756444] gf_spi: gf_irq start 
+[ 8257.826309] gf_spi: gf_irq start 
+[ 8257.906524] gf_spi: gf_irq start 
+[ 8257.986061] gf_spi: gf_irq start 
+[ 8258.064010] gf_spi: gf_irq start 
+[ 8258.083296] gf_spi: gf_irq start 
+[ 8258.151417] gf_spi: gf_irq start 
+[ 8258.234878] gf_spi: gf_irq start 
+[ 8258.311364] gf_spi: gf_irq start 
+[ 8258.393715] gf_spi: gf_irq start 
+[ 8258.475236] gf_spi: gf_irq start 
+[ 8258.554892] gf_spi: gf_irq start 
+[ 8258.635508] gf_spi: gf_irq start 
+[ 8258.717633] gf_spi: gf_irq start 
+[ 8258.799450] gf_spi: gf_irq start 
+[ 8258.878636] gf_spi: gf_irq start 
+[ 8258.954755] gf_spi: gf_irq start 
+[ 8259.036608] gf_spi: gf_irq start 
+[ 8259.056089] gf_spi: gf_irq start 
+[ 8259.126668] gf_spi: gf_irq start 
+[ 8259.203815] gf_spi: gf_irq start 
+[ 8259.283335] gf_spi: gf_irq start 
+[ 8259.356680] gf_spi: gf_irq start 
+[ 8259.441500] gf_spi: gf_irq start 
+[ 8259.521069] gf_spi: gf_irq start 
+[ 8259.612674] gf_spi: gf_irq start 
+[ 8259.699038] gf_spi: gf_irq start 
+[ 8259.779046] gf_spi: gf_irq start 
+[ 8259.859866] gf_spi: gf_irq start 
+[ 8259.939642] gf_spi: gf_irq start 
+[ 8260.018085] gf_spi: gf_irq start 
+[ 8260.103364] gf_spi: gf_irq start 
+[ 8260.186220] gf_spi: gf_irq start 
+[ 8260.270177] gf_spi: gf_irq start 
+[ 8260.355055] gf_spi: gf_irq start 
+[ 8260.410939] IRQ 6: no longer affine to CPU4
+[ 8260.437417] gf_spi: gf_irq start 
+[ 8260.512606] gf_spi: gf_irq start 
+[ 8260.531113] IRQ 6: no longer affine to CPU5
+[ 8260.597411] gf_spi: gf_irq start 
+[ 8260.670861] IRQ 6: no longer affine to CPU4
+[ 8260.682485] gf_spi: gf_irq start 
+[ 8260.763396] gf_spi: gf_irq start 
+[ 8260.783373] gf_spi: gf_irq start 
+[ 8260.853553] gf_spi: gf_irq start 
+[ 8260.873290] gf_spi: gf_irq start 
+[ 8260.948237] gf_spi: gf_irq start 
+[ 8260.967975] gf_spi: gf_irq start 
+[ 8261.038174] gf_spi: gf_irq start 
+[ 8261.108770] gf_spi: gf_irq start 
+[ 8261.140801] gf_spi: gf_irq start 
+[ 8261.226451] gf_spi: gf_irq start 
+[ 8261.307835] gf_spi: gf_irq start 
+[ 8261.387976] gf_spi: gf_irq start 
+[ 8261.477611] gf_spi: gf_irq start 
+[ 8261.567079] gf_spi: gf_irq start 
+[ 8261.586403] gf_spi: gf_irq start 
+[ 8261.661348] gf_spi: gf_irq start 
+[ 8261.751215] gf_spi: gf_irq start 
+[ 8261.770319] gf_spi: gf_irq start 
+[ 8261.849993] gf_spi: gf_irq start 
+[ 8261.937200] gf_spi: gf_irq start 
+[ 8262.018883] gf_spi: gf_irq start 
+[ 8262.091987] IRQ 6: no longer affine to CPU4
+[ 8262.121909] gf_spi: gf_irq start 
+[ 8262.172745] type=1400 audit(1748345831.459:1121466): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8262.185880] type=1400 audit(1748345831.467:1121469): avc:  denied  { open } for  comm="binder:805_3" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8262.186071] type=1400 audit(1748345831.471:1121470): avc:  denied  { open } for  comm="binder:805_3" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8262.201824] gf_spi: gf_irq start 
+[ 8262.285139] gf_spi: gf_irq start 
+[ 8262.373262] IRQ 6: no longer affine to CPU4
+[ 8262.374868] gf_spi: gf_irq start 
+[ 8262.394332] gf_spi: gf_irq start 
+[ 8262.477477] gf_spi: gf_irq start 
+[ 8262.496736] gf_spi: gf_irq start 
+[ 8262.568363] gf_spi: gf_irq start 
+[ 8262.631620] IRQ 6: no longer affine to CPU5
+[ 8262.645442] gf_spi: gf_irq start 
+[ 8262.718668] gf_spi: gf_irq start 
+[ 8262.792507] gf_spi: gf_irq start 
+[ 8262.866089] gf_spi: gf_irq start 
+[ 8262.885785] gf_spi: gf_irq start 
+[ 8262.952001] gf_spi: gf_irq start 
+[ 8262.955996] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8263.030351] gf_spi: gf_irq start 
+[ 8263.102818] gf_spi: gf_irq start 
+[ 8263.181451] gf_spi: gf_irq start 
+[ 8263.262605] gf_spi: gf_irq start 
+[ 8263.341419] gf_spi: gf_irq start 
+[ 8263.419479] gf_spi: gf_irq start 
+[ 8263.438910] gf_spi: gf_irq start 
+[ 8263.515734] gf_spi: gf_irq start 
+[ 8263.535491] gf_spi: gf_irq start 
+[ 8263.606521] gf_spi: gf_irq start 
+[ 8263.686738] gf_spi: gf_irq start 
+[ 8263.769075] gf_spi: gf_irq start 
+[ 8263.840639] gf_spi: gf_irq start 
+[ 8263.923066] gf_spi: gf_irq start 
+[ 8264.003013] gf_spi: gf_irq start 
+[ 8264.023978] gf_spi: gf_irq start 
+[ 8264.108343] gf_spi: gf_irq start 
+[ 8264.195272] gf_spi: gf_irq start 
+[ 8264.281095] gf_spi: gf_irq start 
+[ 8264.365716] gf_spi: gf_irq start 
+[ 8264.451310] gf_spi: gf_irq start 
+[ 8264.534484] gf_spi: gf_irq start 
+[ 8264.611533] gf_spi: gf_irq start 
+[ 8264.692041] gf_spi: gf_irq start 
+[ 8264.711442] gf_spi: gf_irq start 
+[ 8264.787096] gf_spi: gf_irq start 
+[ 8264.869283] gf_spi: gf_irq start 
+[ 8264.889075] gf_spi: gf_irq start 
+[ 8264.911496] (virq:irq_count)- 4:6825061 14:2477995 20:1439930 229:1321809 155:1216984 197:1210773 6:1002881 165:483648 32:396119 168:298886 
+[ 8264.911526] (cpu:irq_count)- 0:7550620 1:4904879 2:1440369 3:1371460 4:206904 5:209959 6:933624 7:939180 
+[ 8264.911539] (ipi:irq_count)- 0:29251685 1:8290667 2:0 3:0 4:27954 5:1316426 6:0 
+[ 8264.970374] gf_spi: gf_irq start 
+[ 8265.051184] gf_spi: gf_irq start 
+[ 8265.129174] gf_spi: gf_irq start 
+[ 8265.207772] gf_spi: gf_irq start 
+[ 8265.291894] gf_spi: gf_irq start 
+[ 8265.370841] gf_spi: gf_irq start 
+[ 8265.451727] gf_spi: gf_irq start 
+[ 8265.529257] gf_spi: gf_irq start 
+[ 8265.610258] gf_spi: gf_irq start 
+[ 8265.690447] gf_spi: gf_irq start 
+[ 8265.770390] gf_spi: gf_irq start 
+[ 8265.849048] gf_spi: gf_irq start 
+[ 8265.917842] gf_spi: gf_irq start 
+[ 8266.001615] gf_spi: gf_irq start 
+[ 8266.091497] gf_spi: gf_irq start 
+[ 8266.173079] gf_spi: gf_irq start 
+[ 8266.252524] gf_spi: gf_irq start 
+[ 8266.333226] gf_spi: gf_irq start 
+[ 8266.412437] gf_spi: gf_irq start 
+[ 8266.493770] gf_spi: gf_irq start 
+[ 8266.572089] gf_spi: gf_irq start 
+[ 8266.653833] gf_spi: gf_irq start 
+[ 8266.732046] gf_spi: gf_irq start 
+[ 8266.814813] gf_spi: gf_irq start 
+[ 8266.895139] gf_spi: gf_irq start 
+[ 8266.974689] gf_spi: gf_irq start 
+[ 8267.054616] gf_spi: gf_irq start 
+[ 8267.138114] gf_spi: gf_irq start 
+[ 8267.209854] gf_spi: gf_irq start 
+[ 8267.290175] gf_spi: gf_irq start 
+[ 8267.371948] gf_spi: gf_irq start 
+[ 8267.451047] gf_spi: gf_irq start 
+[ 8267.530400] gf_spi: gf_irq start 
+[ 8267.610779] gf_spi: gf_irq start 
+[ 8267.691016] gf_spi: gf_irq start 
+[ 8267.771442] gf_spi: gf_irq start 
+[ 8267.842107] gf_spi: gf_irq start 
+[ 8267.862303] gf_spi: gf_irq start 
+[ 8267.934027] gf_spi: gf_irq start 
+[ 8268.016388] gf_spi: gf_irq start 
+[ 8268.103411] gf_spi: gf_irq start 
+[ 8268.181786] gf_spi: gf_irq start 
+[ 8268.258965] gf_spi: gf_irq start 
+[ 8268.335781] gf_spi: gf_irq start 
+[ 8268.414677] gf_spi: gf_irq start 
+[ 8268.491803] gf_spi: gf_irq start 
+[ 8268.572768] gf_spi: gf_irq start 
+[ 8268.651959] gf_spi: gf_irq start 
+[ 8268.727856] gf_spi: gf_irq start 
+[ 8268.806070] gf_spi: gf_irq start 
+[ 8268.883217] gf_spi: gf_irq start 
+[ 8268.962779] gf_spi: gf_irq start 
+[ 8269.042766] gf_spi: gf_irq start 
+[ 8269.136276] gf_spi: gf_irq start 
+[ 8269.156546] gf_spi: gf_irq start 
+[ 8269.249657] gf_spi: gf_irq start 
+[ 8269.268321] gf_spi: gf_irq start 
+[ 8269.360912] gf_spi: gf_irq start 
+[ 8269.380542] gf_spi: gf_irq start 
+[ 8269.464140] gf_spi: gf_irq start 
+[ 8269.483457] gf_spi: gf_irq start 
+[ 8269.575940] gf_spi: gf_irq start 
+[ 8269.595636] gf_spi: gf_irq start 
+[ 8269.683820] gf_spi: gf_irq start 
+[ 8269.780220] gf_spi: gf_irq start 
+[ 8269.798902] gf_spi: gf_irq start 
+[ 8269.894914] gf_spi: gf_irq start 
+[ 8269.914671] gf_spi: gf_irq start 
+[ 8270.005464] gf_spi: gf_irq start 
+[ 8270.022883] gf_spi: gf_irq start 
+[ 8270.115069] gf_spi: gf_irq start 
+[ 8270.134795] gf_spi: gf_irq start 
+[ 8270.231202] gf_spi: gf_irq start 
+[ 8270.251308] gf_spi: gf_irq start 
+[ 8270.346881] gf_spi: gf_irq start 
+[ 8270.367296] gf_spi: gf_irq start 
+[ 8270.460564] gf_spi: gf_irq start 
+[ 8270.481183] gf_spi: gf_irq start 
+[ 8270.577710] gf_spi: gf_irq start 
+[ 8270.595688] gf_spi: gf_irq start 
+[ 8270.683802] gf_spi: gf_irq start 
+[ 8270.702776] gf_spi: gf_irq start 
+[ 8270.794104] gf_spi: gf_irq start 
+[ 8270.812558] gf_spi: gf_irq start 
+[ 8270.904243] gf_spi: gf_irq start 
+[ 8270.924837] gf_spi: gf_irq start 
+[ 8271.009236] gf_spi: gf_irq start 
+[ 8271.028204] gf_spi: gf_irq start 
+[ 8271.118354] gf_spi: gf_irq start 
+[ 8271.138506] gf_spi: gf_irq start 
+[ 8271.231186] gf_spi: gf_irq start 
+[ 8271.252465] gf_spi: gf_irq start 
+[ 8271.336369] gf_spi: gf_irq start 
+[ 8271.356762] gf_spi: gf_irq start 
+[ 8271.447857] gf_spi: gf_irq start 
+[ 8271.467390] gf_spi: gf_irq start 
+[ 8271.554869] gf_spi: gf_irq start 
+[ 8271.574713] gf_spi: gf_irq start 
+[ 8271.661058] gf_spi: gf_irq start 
+[ 8271.763383] gf_spi: gf_irq start 
+[ 8271.782992] gf_spi: gf_irq start 
+[ 8271.876219] gf_spi: gf_irq start 
+[ 8271.894953] gf_spi: gf_irq start 
+[ 8271.979242] gf_spi: gf_irq start 
+[ 8271.998498] gf_spi: gf_irq start 
+[ 8272.091796] gf_spi: gf_irq start 
+[ 8272.112591] gf_spi: gf_irq start 
+[ 8272.203986] gf_spi: gf_irq start 
+[ 8272.303658] gf_spi: gf_irq start 
+[ 8272.322810] gf_spi: gf_irq start 
+[ 8272.411022] gf_spi: gf_irq start 
+[ 8272.431187] gf_spi: gf_irq start 
+[ 8272.523264] gf_spi: gf_irq start 
+[ 8272.542656] gf_spi: gf_irq start 
+[ 8272.624504] gf_spi: gf_irq start 
+[ 8272.645058] gf_spi: gf_irq start 
+[ 8272.734168] gf_spi: gf_irq start 
+[ 8272.754909] gf_spi: gf_irq start 
+[ 8272.848641] gf_spi: gf_irq start 
+[ 8272.868340] gf_spi: gf_irq start 
+[ 8272.959544] gf_spi: gf_irq start 
+[ 8272.979278] gf_spi: gf_irq start 
+[ 8273.051000] gf_spi: gf_irq start 
+[ 8273.128790] gf_spi: gf_irq start 
+[ 8273.213566] gf_spi: gf_irq start 
+[ 8273.295567] gf_spi: gf_irq start 
+[ 8273.376063] gf_spi: gf_irq start 
+[ 8273.456036] gf_spi: gf_irq start 
+[ 8273.533159] gf_spi: gf_irq start 
+[ 8273.603996] gf_spi: gf_irq start 
+[ 8273.682721] gf_spi: gf_irq start 
+[ 8273.769842] gf_spi: gf_irq start 
+[ 8273.840060] gf_spi: gf_irq start 
+[ 8273.914488] gf_spi: gf_irq start 
+[ 8273.999671] gf_spi: gf_irq start 
+[ 8274.085862] gf_spi: gf_irq start 
+[ 8274.111403] IRQ 6: no longer affine to CPU4
+[ 8274.160134] gf_spi: gf_irq start 
+[ 8274.179929] gf_spi: gf_irq start 
+[ 8274.256248] gf_spi: gf_irq start 
+[ 8274.336384] gf_spi: gf_irq start 
+[ 8274.383140] (virq:irq_count)- 4:6833988 14:2480339 20:1440397 229:1321923 155:1216984 197:1213014 6:1004593 165:484119 32:396469 168:299120 
+[ 8274.383182] (cpu:irq_count)- 0:7553596 1:4913176 2:1442405 3:1373233 4:206931 5:209989 6:935224 7:939902 
+[ 8274.383208] (ipi:irq_count)- 0:29264267 1:8299842 2:0 3:0 4:28016 5:1316946 6:0 
+[ 8274.417531] gf_spi: gf_irq start 
+[ 8274.494991] gf_spi: gf_irq start 
+[ 8274.575299] gf_spi: gf_irq start 
+[ 8274.654971] gf_spi: gf_irq start 
+[ 8274.731366] gf_spi: gf_irq start 
+[ 8274.751152] gf_spi: gf_irq start 
+[ 8274.832218] gf_spi: gf_irq start 
+[ 8274.868062] gf_spi: gf_irq start 
+[ 8274.949792] gf_spi: gf_irq start 
+[ 8275.044453] gf_spi: gf_irq start 
+[ 8275.151225] gf_spi: gf_irq start 
+[ 8275.169072] gf_spi: gf_irq start 
+[ 8275.263789] gf_spi: gf_irq start 
+[ 8275.283981] gf_spi: gf_irq start 
+[ 8275.375198] gf_spi: gf_irq start 
+[ 8275.395146] gf_spi: gf_irq start 
+[ 8275.483510] gf_spi: gf_irq start 
+[ 8275.503428] gf_spi: gf_irq start 
+[ 8275.591393] gf_spi: gf_irq start 
+[ 8275.612259] gf_spi: gf_irq start 
+[ 8275.700342] gf_spi: gf_irq start 
+[ 8275.805317] gf_spi: gf_irq start 
+[ 8275.823687] gf_spi: gf_irq start 
+[ 8275.916484] gf_spi: gf_irq start 
+[ 8275.936237] gf_spi: gf_irq start 
+[ 8276.023744] gf_spi: gf_irq start 
+[ 8276.043566] gf_spi: gf_irq start 
+[ 8276.125504] gf_spi: gf_irq start 
+[ 8276.144184] gf_spi: gf_irq start 
+[ 8276.229854] gf_spi: gf_irq start 
+[ 8276.249005] gf_spi: gf_irq start 
+[ 8276.343093] gf_spi: gf_irq start 
+[ 8276.362892] gf_spi: gf_irq start 
+[ 8276.453786] gf_spi: gf_irq start 
+[ 8276.474008] gf_spi: gf_irq start 
+[ 8276.562648] gf_spi: gf_irq start 
+[ 8276.581760] gf_spi: gf_irq start 
+[ 8276.668439] gf_spi: gf_irq start 
+[ 8276.689060] gf_spi: gf_irq start 
+[ 8276.776248] gf_spi: gf_irq start 
+[ 8276.796139] gf_spi: gf_irq start 
+[ 8276.888670] gf_spi: gf_irq start 
+[ 8276.908327] gf_spi: gf_irq start 
+[ 8277.004950] gf_spi: gf_irq start 
+[ 8277.024420] gf_spi: gf_irq start 
+[ 8277.101651] gf_spi: gf_irq start 
+[ 8277.120612] gf_spi: gf_irq start 
+[ 8277.210820] gf_spi: gf_irq start 
+[ 8277.297152] gf_spi: gf_irq start 
+[ 8277.316904] gf_spi: gf_irq start 
+[ 8277.406908] gf_spi: gf_irq start 
+[ 8277.427743] gf_spi: gf_irq start 
+[ 8277.519015] gf_spi: gf_irq start 
+[ 8277.539211] gf_spi: gf_irq start 
+[ 8277.629864] gf_spi: gf_irq start 
+[ 8277.649555] gf_spi: gf_irq start 
+[ 8277.737970] gf_spi: gf_irq start 
+[ 8277.756844] gf_spi: gf_irq start 
+[ 8277.848812] gf_spi: gf_irq start 
+[ 8277.868951] gf_spi: gf_irq start 
+[ 8277.959180] gf_spi: gf_irq start 
+[ 8277.979337] gf_spi: gf_irq start 
+[ 8278.064483] gf_spi: gf_irq start 
+[ 8278.084322] gf_spi: gf_irq start 
+[ 8278.180757] gf_spi: gf_irq start 
+[ 8278.200188] gf_spi: gf_irq start 
+[ 8278.291415] gf_spi: gf_irq start 
+[ 8278.388910] gf_spi: gf_irq start 
+[ 8278.409491] gf_spi: gf_irq start 
+[ 8278.506262] gf_spi: gf_irq start 
+[ 8278.525512] gf_spi: gf_irq start 
+[ 8278.615092] gf_spi: gf_irq start 
+[ 8278.709951] gf_spi: gf_irq start 
+[ 8278.730773] gf_spi: gf_irq start 
+[ 8278.818219] gf_spi: gf_irq start 
+[ 8278.911087] gf_spi: gf_irq start 
+[ 8278.932114] gf_spi: gf_irq start 
+[ 8279.025050] gf_spi: gf_irq start 
+[ 8279.043936] gf_spi: gf_irq start 
+[ 8279.138297] gf_spi: gf_irq start 
+[ 8279.155807] gf_spi: gf_irq start 
+[ 8279.244220] gf_spi: gf_irq start 
+[ 8279.263714] gf_spi: gf_irq start 
+[ 8279.352359] gf_spi: gf_irq start 
+[ 8279.372249] gf_spi: gf_irq start 
+[ 8279.466897] gf_spi: gf_irq start 
+[ 8279.487614] gf_spi: gf_irq start 
+[ 8279.580231] gf_spi: gf_irq start 
+[ 8279.676386] gf_spi: gf_irq start 
+[ 8279.697885] gf_spi: gf_irq start 
+[ 8279.786111] gf_spi: gf_irq start 
+[ 8279.806684] gf_spi: gf_irq start 
+[ 8279.896224] gf_spi: gf_irq start 
+[ 8279.992286] gf_spi: gf_irq start 
+[ 8280.010910] gf_spi: gf_irq start 
+[ 8280.104187] gf_spi: gf_irq start 
+[ 8280.124865] gf_spi: gf_irq start 
+[ 8280.218675] gf_spi: gf_irq start 
+[ 8280.317205] gf_spi: gf_irq start 
+[ 8280.337311] gf_spi: gf_irq start 
+[ 8280.433286] gf_spi: gf_irq start 
+[ 8280.452020] gf_spi: gf_irq start 
+[ 8280.544535] gf_spi: gf_irq start 
+[ 8280.643143] gf_spi: gf_irq start 
+[ 8280.663578] gf_spi: gf_irq start 
+[ 8280.755778] gf_spi: gf_irq start 
+[ 8280.775549] gf_spi: gf_irq start 
+[ 8280.867630] gf_spi: gf_irq start 
+[ 8280.967934] gf_spi: gf_irq start 
+[ 8280.987128] gf_spi: gf_irq start 
+[ 8281.080421] gf_spi: gf_irq start 
+[ 8281.100084] gf_spi: gf_irq start 
+[ 8281.199156] gf_spi: gf_irq start 
+[ 8281.217544] gf_spi: gf_irq start 
+[ 8281.299556] gf_spi: gf_irq start 
+[ 8281.320033] gf_spi: gf_irq start 
+[ 8281.412376] gf_spi: gf_irq start 
+[ 8281.431803] gf_spi: gf_irq start 
+[ 8281.519214] gf_spi: gf_irq start 
+[ 8281.538498] gf_spi: gf_irq start 
+[ 8281.625903] gf_spi: gf_irq start 
+[ 8281.646386] gf_spi: gf_irq start 
+[ 8281.737668] gf_spi: gf_irq start 
+[ 8281.758324] gf_spi: gf_irq start 
+[ 8281.847839] gf_spi: gf_irq start 
+[ 8281.868469] gf_spi: gf_irq start 
+[ 8281.961264] gf_spi: gf_irq start 
+[ 8281.981043] gf_spi: gf_irq start 
+[ 8283.405998] gf_spi: gf_irq start 
+[ 8283.422393] gf_spi: gf_irq start 
+[ 8283.856141] (virq:irq_count)- 4:6838762 14:2481241 20:1440742 229:1322040 155:1216984 197:1213800 6:1006090 165:484638 32:396498 168:299143 
+[ 8283.856194] (cpu:irq_count)- 0:7554777 1:4917428 2:1443393 3:1374261 4:206949 5:210031 6:936988 7:940084 
+[ 8283.856220] (ipi:irq_count)- 0:29269518 1:8305438 2:0 3:0 4:28087 5:1317518 6:0 
+[ 8285.588482] IRQ 14: no longer affine to CPU1
+[ 8285.588499] IRQ 20: no longer affine to CPU1
+[ 8285.588522] IRQ 32: no longer affine to CPU1
+[ 8285.588678] IRQ 165: no longer affine to CPU1
+[ 8285.588715] IRQ 168: no longer affine to CPU1
+[ 8285.588736] IRQ 175: no longer affine to CPU1
+[ 8285.588754] IRQ 183: no longer affine to CPU1
+[ 8285.595178] IRQ 6: no longer affine to CPU2
+[ 8285.659930] [soft_i][0x2b7b274841][11:37:45.545571] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8285.978995] IRQ 6: no longer affine to CPU2
+[ 8286.392412] IRQ 6: no longer affine to CPU7
+[ 8286.441243] [soft_i][0x2bd256bd03][11:39:01.729314] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8286.782781] [soft_i][0x2c067e4bd5][11:39:47.302632] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8291.720533] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8292.050725] IRQ 6: no longer affine to CPU4
+[ 8292.051666] IRQ 6: no longer affine to CPU5
+[ 8292.911938] IRQ 6: no longer affine to CPU5
+[ 8296.142622] (virq:irq_count)- 4:6846897 14:2484789 20:1441478 229:1322777 155:1216984 197:1216718 6:1007363 165:488022 32:396815 168:299387 
+[ 8296.142668] (cpu:irq_count)- 0:7568906 1:4920329 2:1445586 3:1376053 4:207240 5:210281 6:937387 7:940525 
+[ 8296.142693] (ipi:irq_count)- 0:29293478 1:8312977 2:0 3:0 4:28125 5:1318520 6:0 
+[ 8301.933487] IRQ 6: no longer affine to CPU4
+[ 8301.934434] IRQ 6: no longer affine to CPU5
+[ 8305.617676] (virq:irq_count)- 4:6850462 14:2485628 20:1441708 229:1322895 197:1217449 155:1216984 6:1008465 165:488871 32:397020 168:299521 
+[ 8305.617730] (cpu:irq_count)- 0:7573321 1:4921620 2:1446844 3:1377148 4:207278 5:210321 6:937419 7:940573 
+[ 8305.617756] (ipi:irq_count)- 0:29301317 1:8316808 2:0 3:0 4:28175 5:1319055 6:0 
+[ 8314.321137] type=1400 audit(1748346014.834:1121594): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8314.326096] type=1400 audit(1748346014.838:1121595): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8314.329406] type=1400 audit(1748346014.842:1121596): avc:  denied  { open } for  comm="binder:805_2" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8314.335589] type=1400 audit(1748346014.846:1121597): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8314.335758] type=1400 audit(1748346014.846:1121598): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8314.374790] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8315.086268] (virq:irq_count)- 4:6853674 14:2488624 20:1442631 229:1323052 197:1220186 155:1217004 6:1009478 165:489846 32:397175 168:299615 
+[ 8315.086287] (cpu:irq_count)- 0:7582804 1:4922505 2:1447711 3:1378116 4:207438 5:210467 6:937565 7:940734 
+[ 8315.086296] (ipi:irq_count)- 0:29310889 1:8320964 2:0 3:0 4:28216 5:1320235 6:0 
+[ 8315.170750] IRQ 6: no longer affine to CPU5
+[ 8322.770089] IRQ 6: no longer affine to CPU5
+[ 8324.558234] (virq:irq_count)- 4:6865807 14:2491211 20:1450875 229:1323275 197:1222560 155:1217975 6:1010188 165:490254 32:398911 168:300314 
+[ 8324.558243] (cpu:irq_count)- 0:7602813 1:4925010 2:1449583 3:1379989 4:208233 5:211362 6:939328 7:942553 
+[ 8324.558246] (ipi:irq_count)- 0:29349182 1:8343552 2:0 3:0 4:28234 5:1331538 6:0 
+[ 8325.270204] IRQ 6: no longer affine to CPU4
+[ 8327.970418] IRQ 6: no longer affine to CPU5
+[ 8330.680518] type=1400 audit(1748346031.190:1121937): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8330.681297] type=1400 audit(1748346031.190:1121938): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8330.686314] type=1400 audit(1748346031.202:1121939): avc:  denied  { open } for  comm="binder:805_2" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8330.687060] type=1400 audit(1748346031.202:1121940): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8333.850441] IRQ 6: no longer affine to CPU4
+[ 8334.030726] (virq:irq_count)- 4:6879915 14:2494014 20:1468624 229:1323440 197:1225196 155:1220862 6:1010449 165:490857 32:399898 168:300892 
+[ 8334.030766] (cpu:irq_count)- 0:7632047 1:4930611 2:1451657 3:1382140 4:209571 5:212552 6:941087 7:944277 
+[ 8334.030787] (ipi:irq_count)- 0:29396947 1:8369400 2:0 3:0 4:28242 5:1344250 6:0 
+[ 8336.430182] IRQ 6: no longer affine to CPU5
+[ 8338.090264] IRQ 6: no longer affine to CPU5
+[ 8340.470450] IRQ 6: no longer affine to CPU5
+[ 8340.471063] IRQ 6: no longer affine to CPU4
+[ 8342.770098] IRQ 6: no longer affine to CPU5
+[ 8343.190516] IRQ 6: no longer affine to CPU4
+[ 8343.503028] (virq:irq_count)- 4:6892964 14:2497468 20:1476031 229:1323553 197:1228544 155:1222292 6:1011549 165:491190 32:401400 168:302095 
+[ 8343.503054] (cpu:irq_count)- 0:7652252 1:4937696 2:1454221 3:1384436 4:209977 5:212906 6:942769 7:945979 
+[ 8343.503062] (ipi:irq_count)- 0:29438980 1:8389714 2:0 3:0 4:28273 5:1348085 6:0 
+[ 8352.930811] IRQ 6: no longer affine to CPU5
+[ 8352.974591] (virq:irq_count)- 4:6901091 14:2500401 20:1481288 229:1323667 197:1231390 155:1222478 6:1012848 165:491574 32:401716 168:302385 
+[ 8352.974625] (cpu:irq_count)- 0:7657802 1:4951281 2:1456002 3:1386197 4:210158 5:213069 6:943726 7:946688 
+[ 8352.974646] (ipi:irq_count)- 0:29458939 1:8399952 2:0 3:0 4:28320 5:1349360 6:0 
+[ 8355.330747] IRQ 6: no longer affine to CPU4
+[ 8356.330330] IRQ 6: no longer affine to CPU4
+[ 8359.135857] gf_spi: gf_irq start 
+[ 8359.155572] gf_spi: gf_irq start 
+[ 8359.323960] gf_spi: gf_irq start 
+[ 8359.343659] gf_spi: gf_irq start 
+[ 8361.971232] IRQ 6: no longer affine to CPU4
+[ 8362.450838] (virq:irq_count)- 4:6909610 14:2503327 20:1483821 229:1323781 197:1234227 155:1222766 6:1014301 165:492240 32:402328 168:302866 
+[ 8362.450878] (cpu:irq_count)- 0:7662509 1:4963119 2:1457944 3:1388139 4:210338 5:213251 6:944398 7:947480 
+[ 8362.450891] (ipi:irq_count)- 0:29479786 1:8409827 2:0 3:0 4:28376 5:1350650 6:0 
+[ 8371.919312] (virq:irq_count)- 4:6914402 14:2505279 20:1484797 229:1323893 197:1236082 155:1222999 6:1015541 165:492630 32:402441 168:303192 
+[ 8371.919348] (cpu:irq_count)- 0:7664831 1:4970514 2:1459356 3:1389610 4:210358 5:213291 6:944447 7:947541 
+[ 8371.919369] (ipi:irq_count)- 0:29490470 1:8414527 2:0 3:0 4:28425 5:1351181 6:0 
+[ 8373.210949] IRQ 6: no longer affine to CPU4
+[ 8376.588515] gf_spi: gf_irq start 
+[ 8377.438004] type=1400 audit(1748346077.950:1122789): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8377.438690] type=1400 audit(1748346077.954:1122790): avc:  denied  { open } for  comm="binder:805_2" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8377.458003] type=1400 audit(1748346077.954:1122791): avc:  denied  { open } for  comm="binder:805_2" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8377.499594] gf_spi: gf_irq start 
+[ 8377.519314] gf_spi: gf_irq start 
+[ 8378.658546] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8379.270086] IRQ 6: no longer affine to CPU4
+[ 8379.478800] type=1400 audit(1748346079.994:1122828): avc:  denied  { write } for  comm="ndroid.settings" name="com.android.settings-KdV30pBnO6xI8aPXGdxprQ==" dev="dm-42" ino=181657 scontext=u:r:system_app:s0 tcontext=u:object_r:apk_data_file:s0 tclass=dir permissive=0
+[ 8380.310106] IRQ 6: no longer affine to CPU4
+[ 8380.630756] IRQ 6: no longer affine to CPU5
+[ 8381.390364] (virq:irq_count)- 4:6929514 14:2508535 20:1501950 229:1324019 197:1239131 155:1225677 6:1015896 165:493806 32:404035 168:303858 
+[ 8381.390381] (cpu:irq_count)- 0:7668488 1:5003000 2:1461595 3:1391880 4:211813 5:214804 6:946202 7:949304 
+[ 8381.390390] (ipi:irq_count)- 0:29538881 1:8447083 2:0 3:0 4:28436 5:1359428 6:0 
+[ 8382.690293] IRQ 6: no longer affine to CPU5
+[ 8383.715301] [soft_i][0x2c756c7d39][11:41:24.235130] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8383.990322] IRQ 6: no longer affine to CPU1
+[ 8383.990341] IRQ 14: no longer affine to CPU1
+[ 8383.990353] IRQ 20: no longer affine to CPU1
+[ 8383.990371] IRQ 32: no longer affine to CPU1
+[ 8383.990486] IRQ 155: no longer affine to CPU1
+[ 8383.990500] IRQ 165: no longer affine to CPU1
+[ 8384.046495] [soft_i][0x2c75eb63fb][11:41:24.668287] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8384.283432] irq_migrate_all_off_this_cpu: 2 callbacks suppressed
+[ 8384.283436] IRQ 6: no longer affine to CPU5
+[ 8386.613684] IRQ 6: no longer affine to CPU2
+[ 8386.683668] [soft_i][0x2c8005828a][11:41:33.495574] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8387.015269] [soft_i][0x2c85678d66][11:41:38.199293] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8396.496583] (virq:irq_count)- 4:6937916 14:2511981 20:1505362 229:1324223 197:1242405 155:1225677 6:1017652 165:498168 32:404401 168:304084 
+[ 8396.496636] (cpu:irq_count)- 0:7683335 1:5009700 2:1463852 3:1394015 4:212130 5:215165 6:946369 7:949506 
+[ 8396.496661] (ipi:irq_count)- 0:29564452 1:8456301 2:0 3:0 4:28519 5:1360929 6:0 
+[ 8398.180066] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8405.851555] type=1400 audit(1748346117.029:1122906): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8405.858232] type=1400 audit(1748346117.041:1122907): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8405.869034] type=1400 audit(1748346117.049:1122908): avc:  denied  { open } for  comm="binder:805_7" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8405.869246] type=1400 audit(1748346117.049:1122909): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8405.871709] type=1400 audit(1748346117.053:1122910): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8405.908605] gf_spi: gf_irq start 
+[ 8405.928358] gf_spi: gf_irq start 
+[ 8405.966461] (virq:irq_count)- 4:6944670 14:2514467 20:1507019 229:1324902 197:1244251 155:1225677 6:1018491 165:498854 32:404713 168:304335 
+[ 8405.966476] (cpu:irq_count)- 0:7693062 1:5011887 2:1465686 3:1395741 4:212319 5:215344 6:946486 7:949689 
+[ 8405.966485] (ipi:irq_count)- 0:29580487 1:8462921 2:0 3:0 4:28544 5:1361703 6:0 
+[ 8406.025912] gf_spi: gf_irq start 
+[ 8406.045669] gf_spi: gf_irq start 
+[ 8406.081834] gf_spi: gf_irq start 
+[ 8406.101671] gf_spi: gf_irq start 
+[ 8406.121365] gf_spi: gf_irq start 
+[ 8406.224160] gf_spi: gf_irq start 
+[ 8406.469974] IRQ 6: no longer affine to CPU4
+[ 8406.817926] gf_spi: gf_irq start 
+[ 8406.857736] gf_spi: gf_irq start 
+[ 8406.877388] gf_spi: gf_irq start 
+[ 8409.189692] IRQ 6: no longer affine to CPU5
+[ 8412.270455] IRQ 6: no longer affine to CPU4
+[ 8415.438331] (virq:irq_count)- 4:6952258 14:2516634 20:1510241 229:1325018 197:1246186 155:1226327 6:1019690 165:499749 32:405429 168:304823 
+[ 8415.438378] (cpu:irq_count)- 0:7705476 1:5014156 2:1467333 3:1397478 4:212652 5:215694 6:947131 7:950376 
+[ 8415.438404] (ipi:irq_count)- 0:29602150 1:8473144 2:0 3:0 4:28573 5:1366518 6:0 
+[ 8424.370749] IRQ 6: no longer affine to CPU4
+[ 8424.910512] (virq:irq_count)- 4:6957594 14:2518689 20:1512004 229:1325132 197:1248142 155:1228934 6:1020977 165:500163 32:405869 168:305126 
+[ 8424.910532] (cpu:irq_count)- 0:7717059 1:5016026 2:1468672 3:1399007 4:212687 5:215748 6:947461 7:950741 
+[ 8424.910542] (ipi:irq_count)- 0:29617059 1:8479503 2:0 3:0 4:28623 5:1367413 6:0 
+[ 8426.910482] IRQ 6: no longer affine to CPU4
+[ 8430.970113] IRQ 6: no longer affine to CPU5
+[ 8431.609715] IRQ 6: no longer affine to CPU4
+[ 8434.382434] (virq:irq_count)- 4:6968160 14:2521494 20:1512747 229:1325452 197:1250658 155:1234621 6:1022360 165:500553 32:406789 168:305813 
+[ 8434.382466] (cpu:irq_count)- 0:7734241 1:5019193 2:1471338 3:1401131 4:212839 5:215928 6:948420 7:951716 
+[ 8434.382483] (ipi:irq_count)- 0:29645231 1:8489343 2:0 3:0 4:28643 5:1369885 6:0 
+[ 8434.610992] IRQ 6: no longer affine to CPU4
+[ 8443.857983] (virq:irq_count)- 4:6971185 14:2522674 20:1513098 229:1325586 197:1251723 155:1234675 6:1023551 165:500943 32:406830 168:305884 
+[ 8443.858028] (cpu:irq_count)- 0:7738643 1:5020445 2:1472397 3:1402230 4:212874 5:215944 6:948464 7:951780 
+[ 8443.858054] (ipi:irq_count)- 0:29651339 1:8492568 2:0 3:0 4:28699 5:1370441 6:0 
+[ 8445.870237] IRQ 6: no longer affine to CPU5
+[ 8452.772174] IRQ 6: no longer affine to CPU4
+[ 8453.328957] (virq:irq_count)- 4:6973972 14:2523539 20:1513207 229:1325699 197:1252487 155:1234738 6:1024792 165:501351 32:406890 168:305972 
+[ 8453.329009] (cpu:irq_count)- 0:7742225 1:5021737 2:1473479 3:1403186 4:212891 5:215981 6:948493 7:951818 
+[ 8453.329035] (ipi:irq_count)- 0:29656954 1:8495493 2:0 3:0 4:28736 5:1370938 6:0 
+[ 8461.210167] IRQ 6: no longer affine to CPU5
+[ 8461.295915] type=1400 audit(1748346172.477:1123132): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8461.304498] type=1400 audit(1748346172.485:1123133): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8461.329821] type=1400 audit(1748346172.509:1123136): avc:  denied  { open } for  comm="binder:805_7" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8461.610260] IRQ 6: no longer affine to CPU4
+[ 8462.164810] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8462.797778] (virq:irq_count)- 4:6979077 14:2524969 20:1516426 229:1325824 197:1253742 155:1234799 6:1025812 165:502428 32:407180 168:306191 
+[ 8462.797797] (cpu:irq_count)- 0:7751393 1:5023435 2:1474646 3:1404520 4:213198 5:216287 6:948866 7:952155 
+[ 8462.797805] (ipi:irq_count)- 0:29672189 1:8503877 2:0 3:0 4:28787 5:1372463 6:0 
+[ 8462.890881] IRQ 6: no longer affine to CPU5
+[ 8463.470086] IRQ 6: no longer affine to CPU4
+[ 8467.436540] IRQ 6: no longer affine to CPU5
+[ 8469.710454] IRQ 6: no longer affine to CPU5
+[ 8469.966080] IRQ 14: no longer affine to CPU1
+[ 8469.966223] IRQ 167: no longer affine to CPU1
+[ 8469.966240] IRQ 175: no longer affine to CPU1
+[ 8469.966248] IRQ 176: no longer affine to CPU1
+[ 8470.024644] [soft_i][0x2ce4e5c072][11:43:01.642320] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8473.964269] IRQ 6: no longer affine to CPU1
+[ 8473.964464] IRQ 175: no longer affine to CPU1
+[ 8474.037820] [soft_i][0x2ce99cf0a3][11:43:05.762856] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8476.049546] IRQ 6: no longer affine to CPU4
+[ 8479.594681] [soft_i][0x2cfa3ca11e][11:43:20.288942] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8479.750574] IRQ 6: no longer affine to CPU4
+[ 8480.037678] [soft_i][0x2d02e95c88][11:43:27.869041] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8481.419677] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8481.630164] IRQ 6: no longer affine to CPU5
+[ 8481.910029] IRQ 6: no longer affine to CPU4
+[ 8482.390046] IRQ 6: no longer affine to CPU4
+[ 8488.934524] type=1400 audit(1748346216.763:1123258): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8488.941507] type=1400 audit(1748346216.763:1123259): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8488.958315] type=1400 audit(1748346216.767:1123260): avc:  denied  { open } for  comm="binder:805_1" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8488.958465] type=1400 audit(1748346216.767:1123261): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8488.958544] type=1400 audit(1748346216.767:1123262): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8489.421392] (virq:irq_count)- 4:7001552 14:2533302 20:1523668 229:1326756 197:1261087 155:1234819 6:1029014 165:508779 32:408178 168:306879 
+[ 8489.421414] (cpu:irq_count)- 0:7787326 1:5034062 2:1480539 3:1409595 4:213991 5:217137 6:949387 7:952843 
+[ 8489.421422] (ipi:irq_count)- 0:29731904 1:8527323 2:0 3:0 4:28924 5:1376049 6:0 
+[ 8491.800263] type=1400 audit(1748346219.627:1123314): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8491.808660] type=1400 audit(1748346219.635:1123315): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8491.815291] type=1400 audit(1748346219.643:1123318): avc:  denied  { open } for  comm="binder:805_7" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8492.574594] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8498.897185] (virq:irq_count)- 4:7010213 14:2535370 20:1524150 229:1326879 197:1262992 155:1235041 6:1030462 165:509856 32:408903 168:307318 
+[ 8498.897240] (cpu:irq_count)- 0:7797052 1:5036853 2:1482836 3:1411596 4:214172 5:217337 6:949784 7:953263 
+[ 8498.897265] (ipi:irq_count)- 0:29753400 1:8535862 2:0 3:0 4:28955 5:1377365 6:0 
+[ 8504.490316] IRQ 6: no longer affine to CPU4
+[ 8508.366528] (virq:irq_count)- 4:7013345 14:2536055 20:1524219 229:1326996 197:1263569 155:1235041 6:1031635 165:510375 32:409062 168:307425 
+[ 8508.366584] (cpu:irq_count)- 0:7799918 1:5038623 2:1483977 3:1412676 4:214194 5:217367 6:949820 7:953281 
+[ 8508.366611] (ipi:irq_count)- 0:29759915 1:8539002 2:0 3:0 4:29004 5:1377892 6:0 
+[ 8510.345234] IRQ 32: no longer affine to CPU1
+[ 8510.345389] IRQ 165: no longer affine to CPU1
+[ 8510.359275] IRQ 6: no longer affine to CPU3
+[ 8510.430643] [soft_i][0x2d268a121c][11:43:59.001062] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8510.726991] IRQ 6: no longer affine to CPU2
+[ 8510.810304] [soft_i][0x2d2c4abe4c][11:44:04.027785] wlan: [0:I:HTT] htt_get_first_packet_after_wow_wakeup: First packet after WOW Wakeup rcvd
+[ 8511.068797] IRQ 6: no longer affine to CPU1
+[ 8512.228237] IRQ 30: no longer affine to CPU1
+[ 8512.238453] IRQ 6: no longer affine to CPU3
+[ 8512.952156] gf_spi: gf_irq start 
+[ 8512.953705] gf_spi: gf_irq start 
+[ 8512.973335] gf_spi: gf_irq start 
+[ 8512.992762] gf_spi: gf_irq start 
+[ 8513.012327] gf_spi: gf_irq start 
+[ 8513.032145] gf_spi: gf_irq start 
+[ 8513.132228] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8513.229037] gf_spi: gf_irq start 
+[ 8519.416445] type=1400 audit(1748346312.928:1124091): avc:  denied  { search } for  comm="sh" name="tests" dev="dm-42" ino=117 scontext=u:r:untrusted_app_27:s0:c28,c257,c512,c768 tcontext=u:object_r:shell_test_data_file:s0 tclass=dir permissive=0 app=com.termux
+[ 8522.445089] (virq:irq_count)- 4:7026892 14:2541528 20:1529389 229:1327205 197:1268747 155:1237785 6:1032918 165:517455 32:410310 168:308160 
+[ 8522.445110] (cpu:irq_count)- 0:7828744 1:5045548 2:1486380 3:1415262 4:214980 5:218239 6:951358 7:954766 
+[ 8522.445121] (ipi:irq_count)- 0:29815529 1:8557886 2:0 3:0 4:29033 5:1388583 6:0 
+[ 8522.888878] IRQ 6: no longer affine to CPU5
+[ 8531.918655] (virq:irq_count)- 4:7033589 14:2543575 20:1529561 229:1327317 197:1270690 155:1241484 6:1034422 165:517764 32:410808 168:308413 
+[ 8531.918703] (cpu:irq_count)- 0:7839978 1:5048370 2:1488162 3:1417022 4:215006 5:218292 6:951736 7:955173 
+[ 8531.918728] (ipi:irq_count)- 0:29834900 1:8563776 2:0 3:0 4:29075 5:1389579 6:0 
+[ 8541.391644] (virq:irq_count)- 4:7040123 14:2545355 20:1530479 229:1327431 197:1272371 155:1246614 6:1035867 165:518097 32:411293 168:308664 
+[ 8541.391690] (cpu:irq_count)- 0:7852401 1:5051572 2:1489825 3:1418630 4:215031 5:218315 6:952297 7:955778 
+[ 8541.391715] (ipi:irq_count)- 0:29854883 1:8569717 2:0 3:0 4:29120 5:1390636 6:0 
+[ 8550.861264] (virq:irq_count)- 4:7044289 14:2546373 20:1530535 229:1327545 197:1273283 155:1247926 6:1037286 165:518568 32:411524 168:308806 
+[ 8550.861311] (cpu:irq_count)- 0:7858128 1:5053443 2:1490842 3:1419984 4:215045 5:218334 6:952619 7:956116 
+[ 8550.861337] (ipi:irq_count)- 0:29865572 1:8573272 2:0 3:0 4:29171 5:1391289 6:0 
+[ 8560.334302] (virq:irq_count)- 4:7046591 14:2547166 20:1530708 229:1327659 197:1273968 155:1247980 6:1038492 165:519249 32:411568 168:308851 
+[ 8560.334350] (cpu:irq_count)- 0:7861494 1:5054830 2:1491785 3:1420781 4:215045 5:218351 6:952639 7:956131 
+[ 8560.334376] (ipi:irq_count)- 0:29870905 1:8575497 2:0 3:0 4:29220 5:1391791 6:0 
+[ 8569.804911] (virq:irq_count)- 4:7049504 14:2548246 20:1531854 229:1327772 197:1274951 155:1248034 6:1039673 165:519576 32:411628 168:308916 
+[ 8569.804950] (cpu:irq_count)- 0:7865298 1:5057378 2:1492796 3:1421791 4:215063 5:218351 6:952661 7:956147 
+[ 8569.804964] (ipi:irq_count)- 0:29877650 1:8578508 2:0 3:0 4:29266 5:1392309 6:0 
+[ 8575.633910] type=1400 audit(1748346369.144:1124132): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8575.640722] type=1400 audit(1748346369.148:1124133): avc:  denied  { open } for  comm="binder:805_7" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8575.648568] type=1400 audit(1748346369.156:1124134): avc:  denied  { open } for  comm="binder:805_7" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8575.909885] IRQ 6: no longer affine to CPU4
+[ 8576.594479] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8577.128570] IRQ 6: no longer affine to CPU4
+[ 8579.276403] (virq:irq_count)- 4:7055813 14:2550131 20:1532127 229:1327897 197:1276660 155:1248086 6:1041043 165:520926 32:412245 168:309147 
+[ 8579.276422] (cpu:irq_count)- 0:7872881 1:5059806 2:1494480 3:1423459 4:215290 5:218618 6:953056 7:956499 
+[ 8579.276431] (ipi:irq_count)- 0:29893155 1:8585489 2:0 3:0 4:29335 5:1393396 6:0 
+[ 8580.440259] gf_spi: gf_irq start 
+[ 8580.459916] gf_spi: gf_irq start 
+[ 8580.577645] gf_spi: gf_irq start 
+[ 8580.597427] gf_spi: gf_irq start 
+[ 8581.732891] IRQ 6: no longer affine to CPU4
+[ 8582.758607] IRQ 20: no longer affine to CPU1
+[ 8582.758785] IRQ 168: no longer affine to CPU1
+[ 8582.766928] IRQ 1: no longer affine to CPU2
+[ 8582.766948] IRQ 6: no longer affine to CPU2
+[ 8582.821022] gf_spi: gf_irq start 
+[ 8582.832649] gf_spi: gf_irq start 
+[ 8582.852435] gf_spi: gf_irq start 
+[ 8582.872358] gf_spi: gf_irq start 
+[ 8582.891922] gf_spi: gf_irq start 
+[ 8583.035789] gf_spi: gf_irq start 
+[ 8584.289425] IRQ 6: no longer affine to CPU4
+[ 8590.349088] IRQ 6: no longer affine to CPU4
+[ 8592.333572] (virq:irq_count)- 4:7065917 14:2553207 20:1532984 229:1328069 197:1279448 155:1252280 6:1042970 165:522789 32:413314 168:309534 
+[ 8592.333621] (cpu:irq_count)- 0:7890420 1:5063355 2:1496831 3:1426044 4:215603 5:218999 6:953669 7:957208 
+[ 8592.333646] (ipi:irq_count)- 0:29922240 1:8595676 2:0 3:0 4:29396 5:1396630 6:0 
+[ 8597.408573] IRQ 6: no longer affine to CPU4
+[ 8599.073463] type=1400 audit(1748346393.433:1124255): avc:  denied  { search } for  comm="ls" name="tests" dev="dm-42" ino=117 scontext=u:r:untrusted_app_27:s0:c28,c257,c512,c768 tcontext=u:object_r:shell_test_data_file:s0 tclass=dir permissive=0 app=com.termux
+[ 8600.330539] type=1400 audit(1748346394.689:1124272): avc:  denied  { search } for  comm="sh" name="tests" dev="dm-42" ino=117 scontext=u:r:untrusted_app_27:s0:c28,c257,c512,c768 tcontext=u:object_r:shell_test_data_file:s0 tclass=dir permissive=0 app=com.termux
+[ 8600.768592] IRQ 6: no longer affine to CPU5
+[ 8601.804954] (virq:irq_count)- 4:7071794 14:2555209 20:1533586 229:1328183 197:1281350 155:1255552 6:1044388 165:523116 32:413671 168:309722 
+[ 8601.804999] (cpu:irq_count)- 0:7901440 1:5065590 2:1498349 3:1427729 4:215710 5:219087 6:953788 7:957439 
+[ 8601.805025] (ipi:irq_count)- 0:29936911 1:8601146 2:0 3:0 4:29455 5:1397389 6:0 
+[ 8603.268721] IRQ 6: no longer affine to CPU4
+[ 8609.528533] IRQ 6: no longer affine to CPU5
+[ 8611.276897] (virq:irq_count)- 4:7079057 14:2557813 20:1534518 229:1328296 197:1283863 155:1258748 6:1045665 165:523695 32:414275 168:309948 
+[ 8611.276904] (cpu:irq_count)- 0:7915170 1:5067805 2:1500052 3:1429349 4:215944 5:219444 6:954152 7:957842 
+[ 8611.276907] (ipi:irq_count)- 0:29956988 1:8608063 2:0 3:0 4:29476 5:1399020 6:0 
+[ 8616.028396] IRQ 6: no longer affine to CPU5
+[ 8620.750242] (virq:irq_count)- 4:7086683 14:2559724 20:1534768 229:1328410 197:1285671 155:1262240 6:1047261 165:524085 32:414904 168:310200 
+[ 8620.750286] (cpu:irq_count)- 0:7927022 1:5070241 2:1502041 3:1431003 4:216146 5:219631 6:954630 7:958316 
+[ 8620.750311] (ipi:irq_count)- 0:29975549 1:8614252 2:0 3:0 4:29528 5:1400700 6:0 
+[ 8630.221493] (virq:irq_count)- 4:7091617 14:2561379 20:1535507 229:1328569 197:1287174 155:1263945 6:1048785 165:524412 32:415005 168:310282 
+[ 8630.221544] (cpu:irq_count)- 0:7935553 1:5072032 2:1503509 3:1432375 4:216205 5:219724 6:954665 7:958356 
+[ 8630.221570] (ipi:irq_count)- 0:29986686 1:8618568 2:0 3:0 4:29577 5:1401260 6:0 
+[ 8639.694185] (virq:irq_count)- 4:7094908 14:2562691 20:1536012 229:1328760 197:1288310 155:1264008 6:1050031 165:524883 32:415032 168:310304 
+[ 8639.694231] (cpu:irq_count)- 0:7940561 1:5073245 2:1504557 3:1433586 4:216324 5:219782 6:954673 7:958391 
+[ 8639.694257] (ipi:irq_count)- 0:29993945 1:8621717 2:0 3:0 4:29633 5:1401766 6:0 
+[ 8648.103760] gf_spi: gf_irq start 
+[ 8648.121577] gf_spi: gf_irq start 
+[ 8648.654639] gf_spi: gf_irq start 
+[ 8648.674718] gf_spi: gf_irq start 
+[ 8649.164583] (virq:irq_count)- 4:7099692 14:2564490 20:1536593 229:1328878 197:1289961 155:1264071 6:1051329 165:525852 32:415203 168:310446 
+[ 8649.164630] (cpu:irq_count)- 0:7947990 1:5074810 2:1505856 3:1435026 4:216476 5:219966 6:954770 7:958526 
+[ 8649.164657] (ipi:irq_count)- 0:30004780 1:8626521 2:0 3:0 4:29678 5:1402481 6:0 
+[ 8649.434531] type=1400 audit(1748346443.793:1124558): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup48" dev="sysfs" ino=66031 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8649.435611] type=1400 audit(1748346443.793:1124559): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/c800000.qcom,icnss/wakeup/wakeup38" dev="sysfs" ino=62791 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8649.437025] type=1400 audit(1748346443.797:1124560): avc:  denied  { open } for  comm="binder:805_1" path=2F7379732F646576696365732F706C6174666F726D2F736F632F736F633A71636F6D2C6D736D2D617564696F2D6170722F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F2F736F633A71636F6D2C6D736D2D617564696F2D6170723A71636F6D2C7136636F72652D617564696F3A736F756E642F4C697374656E203220417564696F20536572766963652F77616B6575702F77616B657570313236 dev="sysfs" ino=111760 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8649.437870] type=1400 audit(1748346443.797:1124561): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/virtual/misc/msm_evrc/wakeup18" dev="sysfs" ino=50685 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8649.438686] type=1400 audit(1748346443.797:1124562): avc:  denied  { open } for  comm="binder:805_1" path="/sys/devices/platform/soc/4c90000.i2c/i2c-3/3-004e/tcpc/type_c_port0/wakeup46" dev="sysfs" ino=65999 scontext=u:r:system_suspend:s0 tcontext=u:object_r:sysfs:s0 tclass=dir permissive=0
+[ 8649.526882] [drm:dsi_ctrl_isr_configure] [msm-dsi-info]: dsi-ctrl-0: IRQ 226 registered
+[ 8651.208046] IRQ 6: no longer affine to CPU4
+[ 8658.636103] (virq:irq_count)- 4:7106256 14:2566362 20:1536946 229:1328998 197:1291581 155:1266442 6:1052829 165:526653 32:415619 168:310672 
+[ 8658.636122] (cpu:irq_count)- 0:7958380 1:5076861 2:1507472 3:1436464 4:216819 5:220289 6:955161 7:958980 
+[ 8658.636131] (ipi:irq_count)- 0:30023790 1:8633211 2:0 3:0 4:29735 5:1404959 6:0 
