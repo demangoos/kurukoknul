@@ -11,4 +11,15 @@
 };
 
 &soc {
+	ir_led {
+        compatible = "qcom,ir-led";
+        linux,name = "infrared";
+        qcom,led-name = "ir";
+        qcom,max-current = <500>;
+        qcom,default-state = "off";
+        qcom,duty-pcts = [ 00 ];
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&ir_led_default>;
+    };
 };

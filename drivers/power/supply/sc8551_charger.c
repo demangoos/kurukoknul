@@ -148,32 +148,6 @@ do {											\
 		printk(KERN_DEBUG "[sc8551-STANDALONE]:%s:" fmt, __func__, ##__VA_ARGS__);\
 } while(0);
 
-#define MAX_CHARGE_POWER_W 33
-#define REDUCED_CHARGE_CURRENT_MA 10000
-#define BATTERY_THRESHOLD_PCT 80
-
-#define SC8551_MAX_FCC_UA 5000000  // 5A max
-#define SC8551_REDUCED_FCC_UA 1000000 // 1A for >90% 
-#define SC8551_DEFAULT_FCC_UA 3000000 // 3A default
-#define BATTERY_CAPACITY_THRESHOLD 90
-
-// Meningkatkan batas arus maksimum
-#define SC8551_BUS_OCP_UCP_THRESHOLD    3500 // Dari 2500mA
-#define SC8551_IBUS_LIMIT_MAX           4000 // Dari 3000mA 
-#define SC8551_ICHG_MAX                 5000 // Dari 2500mA
-
-// Thermal throttling thresholds
-static const int THERMAL_LEVELS[] = {
-    4000,  // Normal operation
-    3500,  // Light throttling
-    3000,  // Moderate throttling  
-    2500,  // Heavy throttling
-    2000   // Emergency throttling
-};
-
-static bool screen_is_off = false;
-static int last_charging_current = 0;
-
 struct sc8551_cfg {
 	bool bat_ovp_disable;
 	bool bat_ocp_disable;
@@ -298,7 +272,6 @@ struct sc8551 {
 	struct power_supply_desc psy_desc;
 	struct power_supply_config psy_cfg;
 	struct power_supply *fc2_psy;
-	struct power_supply *batt_psy;
 };
 
 static int __sc8551_read_byte(struct sc8551 *sc, u8 reg, u8 *data)
@@ -387,7 +360,7 @@ out:
 	return ret;
 }
 
-int sc8551_enable_charge(struct sc8551 *sc, bool enable)
+static int sc8551_enable_charge(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -426,7 +399,7 @@ static int sc8551_check_charge_enabled(struct sc8551 *sc, bool *enable)
 	return ret;
 }
 
-int sc8551_enable_wdt(struct sc8551 *sc, bool enable)
+static int sc8551_enable_wdt(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -458,7 +431,7 @@ static int sc8551_set_reg_reset(struct sc8551 *sc)
 	return ret;
 }
 
-int sc8551_enable_batovp(struct sc8551 *sc, bool enable)
+static int sc8551_enable_batovp(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -476,7 +449,7 @@ int sc8551_enable_batovp(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_batovp);
 
-int sc8551_set_batovp_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_batovp_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -494,7 +467,7 @@ int sc8551_set_batovp_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_batovp_th);
 
-int sc8551_enable_batovp_alarm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_batovp_alarm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -512,7 +485,7 @@ int sc8551_enable_batovp_alarm(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_batovp_alarm);
 
-int sc8551_set_batovp_alarm_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_batovp_alarm_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -530,7 +503,7 @@ int sc8551_set_batovp_alarm_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_batovp_alarm_th);
 
-int sc8551_enable_batocp(struct sc8551 *sc, bool enable)
+static int sc8551_enable_batocp(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -548,7 +521,7 @@ int sc8551_enable_batocp(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_batocp);
 
-int sc8551_set_batocp_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_batocp_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -566,7 +539,7 @@ int sc8551_set_batocp_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_batocp_th);
 
-int sc8551_enable_batocp_alarm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_batocp_alarm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -584,7 +557,7 @@ int sc8551_enable_batocp_alarm(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_batocp_alarm);
 
-int sc8551_set_batocp_alarm_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_batocp_alarm_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -602,7 +575,7 @@ int sc8551_set_batocp_alarm_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_batocp_alarm_th);
 
-int sc8551_set_busovp_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_busovp_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -620,7 +593,7 @@ int sc8551_set_busovp_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_busovp_th);
 
-int sc8551_enable_busovp_alarm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_busovp_alarm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -638,7 +611,7 @@ int sc8551_enable_busovp_alarm(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_busovp_alarm);
 
-int sc8551_set_busovp_alarm_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_busovp_alarm_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -656,7 +629,7 @@ int sc8551_set_busovp_alarm_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_busovp_alarm_th);
 
-int sc8551_enable_busocp(struct sc8551 *sc, bool enable)
+static int sc8551_enable_busocp(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -674,7 +647,7 @@ int sc8551_enable_busocp(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_busocp);
 
-int sc8551_set_busocp_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_busocp_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -692,7 +665,7 @@ int sc8551_set_busocp_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_busocp_th);
 
-int sc8551_enable_busocp_alarm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_busocp_alarm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -710,7 +683,7 @@ int sc8551_enable_busocp_alarm(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_busocp_alarm);
 
-int sc8551_set_busocp_alarm_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_busocp_alarm_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -728,7 +701,7 @@ int sc8551_set_busocp_alarm_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_busocp_alarm_th);
 
-int sc8551_enable_batucp_alarm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_batucp_alarm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -746,7 +719,7 @@ int sc8551_enable_batucp_alarm(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_batucp_alarm);
 
-int sc8551_set_batucp_alarm_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_batucp_alarm_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -764,7 +737,7 @@ int sc8551_set_batucp_alarm_th(struct sc8551 *sc, int threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_batucp_alarm_th);
 
-int sc8551_set_acovp_th(struct sc8551 *sc, int threshold)
+static int sc8551_set_acovp_th(struct sc8551 *sc, int threshold)
 {
 	int ret;
 	u8 val;
@@ -824,7 +797,7 @@ static int sc8551_set_vdrop_deglitch(struct sc8551 *sc, int us)
 	return ret;
 }
 
-int sc8551_enable_bat_therm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_bat_therm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -845,7 +818,7 @@ EXPORT_SYMBOL_GPL(sc8551_enable_bat_therm);
 /*
  * the input threshold is the raw value that would write to register directly.
  */
-int sc8551_set_bat_therm_th(struct sc8551 *sc, u8 threshold)
+static int sc8551_set_bat_therm_th(struct sc8551 *sc, u8 threshold)
 {
 	int ret;
 
@@ -854,7 +827,7 @@ int sc8551_set_bat_therm_th(struct sc8551 *sc, u8 threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_bat_therm_th);
 
-int sc8551_enable_bus_therm(struct sc8551 *sc, bool enable)
+static int sc8551_enable_bus_therm(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -875,7 +848,7 @@ EXPORT_SYMBOL_GPL(sc8551_enable_bus_therm);
 /*
  * the input threshold is the raw value that would write to register directly.
  */
-int sc8551_set_bus_therm_th(struct sc8551 *sc, u8 threshold)
+static int sc8551_set_bus_therm_th(struct sc8551 *sc, u8 threshold)
 {
 	int ret;
 
@@ -887,7 +860,7 @@ EXPORT_SYMBOL_GPL(sc8551_set_bus_therm_th);
 /*
  * please be noted that the unit here is degC
  */
-int sc8551_set_die_therm_th(struct sc8551 *sc, u8 threshold)
+static int sc8551_set_die_therm_th(struct sc8551 *sc, u8 threshold)
 {
 	int ret;
 	u8 val;
@@ -902,7 +875,7 @@ int sc8551_set_die_therm_th(struct sc8551 *sc, u8 threshold)
 }
 EXPORT_SYMBOL_GPL(sc8551_set_die_therm_th);
 
-int sc8551_enable_adc(struct sc8551 *sc, bool enable)
+static int sc8551_enable_adc(struct sc8551 *sc, bool enable)
 {
 	int ret;
 	u8 val;
@@ -920,7 +893,7 @@ int sc8551_enable_adc(struct sc8551 *sc, bool enable)
 }
 EXPORT_SYMBOL_GPL(sc8551_enable_adc);
 
-int sc8551_set_adc_scanrate(struct sc8551 *sc, bool oneshot)
+static int sc8551_set_adc_scanrate(struct sc8551 *sc, bool oneshot)
 {
 	int ret;
 	u8 val;
@@ -939,7 +912,7 @@ int sc8551_set_adc_scanrate(struct sc8551 *sc, bool oneshot)
 EXPORT_SYMBOL_GPL(sc8551_set_adc_scanrate);
 
 #define ADC_REG_BASE SC8551_REG_16
-int sc8551_get_adc_data(struct sc8551 *sc, int channel,  int *result)
+static int sc8551_get_adc_data(struct sc8551 *sc, int channel,  int *result)
 {
 	int ret;
 	u8 val_l, val_h;
@@ -1001,7 +974,7 @@ static int sc8551_set_adc_scan(struct sc8551 *sc, int channel, bool enable)
 	return ret;
 }
 
-int sc8551_set_alarm_int_mask(struct sc8551 *sc, u8 mask)
+static int sc8551_set_alarm_int_mask(struct sc8551 *sc, u8 mask)
 {
 	int ret;
 	u8 val;
@@ -1500,20 +1473,10 @@ static int sc8551_init_regulation(struct sc8551 *sc)
 
 static int sc8551_init_device(struct sc8551 *sc)
 {
-	int max_curr_ma;
-
 	sc8551_set_reg_reset(sc);
 	sc8551_enable_wdt(sc, false);
 	sc8551_set_ss_timeout(sc, 100000);
 	sc8551_set_sense_resistor(sc, sc->cfg->sense_r_mohm);
-
-	// Calculate max current based on 33W limit
-	// P = V * I, assuming typical battery voltage of 4V
-	max_curr_ma = (MAX_CHARGE_POWER_W * 1000) / 4; // Convert 33W to mA at 4V
-
-	// Set max charge current
-	sc8551_set_busocp_th(sc, max_curr_ma);
-
 	sc8551_init_protection(sc);
 	sc8551_init_adc(sc);
 	sc8551_init_int_src(sc);
@@ -1521,72 +1484,6 @@ static int sc8551_init_device(struct sc8551 *sc)
 
 	return 0;
 }
-
-static int sc8551_set_adaptive_charging(struct sc8551 *sc, int capacity) 
-{
-    int target_curr;
-    int ret;
-    bool thermal_limited = false;
-
-    // Basic thermal check
-    if (sc->die_temp >= 85) {
-        thermal_limited = true;
-        pr_info("SC8551: Thermal limiting enabled at %dC\n", sc->die_temp);
-    }
-
-    // Set target current based on capacity and screen state  
-    if (capacity >= BATTERY_CAPACITY_THRESHOLD) {
-        target_curr = SC8551_REDUCED_FCC_UA;
-        pr_info("SC8551: Battery > 90%%, reducing FCC to %duA\n", target_curr);
-    } else if (screen_is_off && !thermal_limited) {
-        target_curr = SC8551_MAX_FCC_UA;
-        pr_info("SC8551: Screen off, setting max FCC to %duA\n", target_curr);
-    } else {
-        target_curr = SC8551_DEFAULT_FCC_UA;
-        pr_info("SC8551: Normal charging at %duA\n", target_curr);
-    }
-
-    // Only update if current changed
-    if (target_curr != last_charging_current) {
-        ret = sc8551_set_busocp_th(sc, target_curr/1000); // Fixed function name
-        if (ret < 0) {
-            pr_err("SC8551: Failed to set charging current: %d\n", ret);
-            return ret;
-        }
-        last_charging_current = target_curr;
-    }
-
-    return 0;
-}
-
-static void sc8551_monitor_work(struct work_struct *work) 
-{
-    struct sc8551 *sc = container_of(work, struct sc8551, monitor_work.work);
-    union power_supply_propval val = {0,};
-    int ret;
-
-    // Get battery capacity
-    if (!sc->batt_psy)
-        sc->batt_psy = power_supply_get_by_name("battery");
-
-    if (sc->batt_psy) {
-        ret = power_supply_get_property(sc->batt_psy,
-                POWER_SUPPLY_PROP_CAPACITY, &val);
-        if (ret == 0) {
-            sc8551_set_adaptive_charging(sc, val.intval);
-        }
-    }
-
-    schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000));
-}
-
-int sc8551_screen_state_change(bool is_off)
-{
-    screen_is_off = is_off;
-    pr_info("SC8551: Screen state changed to: %s\n", is_off ? "OFF" : "ON");
-    return 0;
-}
-EXPORT_SYMBOL(sc8551_screen_state_change);
 
 static int sc8551_set_present(struct sc8551 *sc, bool present)
 {
@@ -1696,8 +1593,10 @@ static int sc8551_charger_get_property(struct power_supply *psy,
 		val->intval = sc->vbus_error;
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
+		val->intval = 5000000; // 5A
 		break;
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+		val->intval = 5000000; // 5A
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
 		ret = sc8551_get_adc_data(sc, ADC_VBAT, &result);
@@ -1710,6 +1609,22 @@ static int sc8551_charger_get_property(struct power_supply *psy,
 	}
 
 	return 0;
+}
+
+// Tambahkan deklarasi fungsi sebelum digunakan
+static int sc8551_set_charge_current(struct sc8551 *sc, int uA);
+static int sc8551_set_input_current_limit(struct sc8551 *sc, int uA);
+
+static int sc8551_set_charge_current(struct sc8551 *sc, int uA)
+{
+    // Dummy: return 0, implementasi register sesuai kebutuhan hardware
+    return 0;
+}
+
+static int sc8551_set_input_current_limit(struct sc8551 *sc, int uA)
+{
+    // Dummy: return 0, implementasi register sesuai kebutuhan hardware
+    return 0;
 }
 
 static int sc8551_charger_set_property(struct power_supply *psy,
@@ -1728,8 +1643,10 @@ static int sc8551_charger_set_property(struct power_supply *psy,
 		sc8551_set_present(sc, !!val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
+		sc8551_set_charge_current(sc, val->intval);
 		break;
 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+		sc8551_set_input_current_limit(sc, val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
 		break;
@@ -1944,10 +1861,6 @@ static int sc8551_charger_probe(struct i2c_client *client,
 
 	device_init_wakeup(sc->dev, 1);
 
-	// Initialize monitoring work
-	INIT_DELAYED_WORK(&sc->monitor_work, sc8551_monitor_work);
-	schedule_delayed_work(&sc->monitor_work, msecs_to_jiffies(5000));
-
 	determine_initial_status(sc);
 
 	sc_info("sc8551 probe successfully, Part Num:%d\n!",
@@ -2015,8 +1928,6 @@ static int sc8551_charger_remove(struct i2c_client *client)
 {
 	struct sc8551 *sc = i2c_get_clientdata(client);
 
-	cancel_delayed_work_sync(&sc->monitor_work);
-
 	sc8551_enable_adc(sc, false);
 	power_supply_unregister(sc->fc2_psy);
 	mutex_destroy(&sc->charging_disable_lock);
@@ -2065,3 +1976,5 @@ module_i2c_driver(sc8551_charger_driver);
 MODULE_DESCRIPTION("SC SC8551 Charge Pump Driver");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Aiden-yu@southchip.com");
+
+

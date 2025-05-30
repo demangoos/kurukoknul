@@ -1008,6 +1008,9 @@ static int ln8000_charger_set_property(struct power_supply *psy,
 		ret = ln8000_set_iin_limit(info, val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
+		// Sinkronkan arus charging dengan permintaan policy manager
+		// Biasanya arus ini dalam satuan uA, pastikan konversi jika perlu
+		ret = ln8000_set_iin_limit(info, val->intval);
 		break;
 	default:
 		ret = -EINVAL;

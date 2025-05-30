@@ -526,19 +526,31 @@ static void handle_critical_trips(struct thermal_zone_device *tz,
 
 static void handle_thermal_trip(struct thermal_zone_device *tz, int trip)
 {
-	enum thermal_trip_type type;
+    enum thermal_trip_type type;
 
-	/* Ignore disabled trip points */
-	if (test_bit(trip, &tz->trips_disabled))
-		return;
+    /* Ignore disabled trip points */
+    if (test_bit(trip, &tz->trips_disabled))
+        return;
 
-	tz->ops->get_trip_type(tz, trip, &type);
+    tz->ops->get_trip_type(tz, trip, &type);
 
-	if (type == THERMAL_TRIP_CRITICAL || type == THERMAL_TRIP_HOT)
-		handle_critical_trips(tz, trip, type);
-	else
-		handle_non_critical_trips(tz, trip);
-	/*
+    if (type == THERMAL_TRIP_CRITICAL || type == THERMAL_TRIP_HOT)
+        handle_critical_trips(tz, trip, type);
+    else
+        handle_non_critical_trips(tz, trip);
+
+    // Log trip info tanpa mitigation_idx
+    if (tz->ops->get_trip_temp && tz->ops->get_trip_type) {
+        int trip_temp = 0;
+        tz->ops->get_trip_temp(tz, trip, &trip_temp);
+        pr_info("thermal: handle_thermal_trip: zone=%s trip=%d type=%d temp=%d trip_temp=%d\n",
+            tz->type, trip, type, tz->temperature, trip_temp);
+    } else {
+        pr_info("thermal: handle_thermal_trip: zone=%s trip=%d type=%d temp=%d\n",
+            tz->type, trip, type, tz->temperature);
+    }
+
+    /*
 	 * Alright, we handled this trip successfully.
 	 * So, start monitoring again.
 	 */

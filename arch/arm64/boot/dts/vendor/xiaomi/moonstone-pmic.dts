@@ -108,14 +108,14 @@
 		pinctrl-0 = <&bq25890_int_gpio &bq25890_en_gpio>;
 		pinctrl-names = "default";
 		reg = <0x6a>;
-		ti,battery-regulation-voltage = <0x43e6d0>;
+		ti,battery-regulation-voltage = <4400000>;    
 		ti,boost-max-current = <0x192d50>;
-		ti,boost-voltage = <0x4c4b40>;
-		ti,charge-current = <0x2dc6c0>;
-		ti,minimum-sys-voltage = <0x36ee80>;
+		ti,boost-voltage = <5000000>;                // 5V boost
+		ti,charge-current = <3300000>;               // 3.3A (33W/10V)
+		ti,minimum-sys-voltage = <3400000>;          // 3.4V min sys voltage
 		ti,precharge-current = <0x1f400>;
-		ti,termination-current = <0x30d40>;
-		ti,thermal-regulation-threshold = <0x78>;
+		ti,termination-current = <200000>;           // 200mA termination
+		ti,thermal-regulation-threshold = <120>;      // 120°C thermal limit
 	};
 
 	sm5602@71 {
@@ -349,9 +349,9 @@
 	charger-manager {
 		#io-channel-cells = <1>;
 		compatible = "qcom,wt_chg";
-		qcom,batt_iterm = <0x3e800>;
-		qcom,fcc-max-ua = <0xbd3580>;
-		qcom,fv-max-uv = <0x4434f0>;
+		qcom,batt_iterm = <200000>;                 // 200mA termination current
+		qcom,fcc-max-ua = <3300000>;                // 3.3A max charging current
+		qcom,fv-max-uv = <4400000>;                 // 4.4V max voltage
 		status = "okay";
 	};
 

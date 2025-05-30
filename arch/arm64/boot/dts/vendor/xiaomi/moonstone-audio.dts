@@ -57,10 +57,16 @@
 		"VA DMIC0", "VA MIC BIAS1",
 		"VA DMIC1", "VA MIC BIAS1",
 		"VA DMIC2", "VA MIC BIAS3",
-		"VA DMIC3", "VA MIC BIAS3";
+		"VA DMIC3", "VA MIC BIAS3",
+
+		// Stereo speaker routing: earpiece as left, main speaker as right
+		"SPK_L", "HPHL",      // earpiece (HPHL) as left speaker
+		"SPK_R", "AUX";       // main speaker (AUX) as right speaker
+
 	si,sia81xx-max-num = <1>;
 	si,sia81xx-aux-devs = <988>;
 	si,sia81xx-aux-devs-prefix = "SpkrLeft";
+	
 };
 
 &qupv3_se10_i2c {

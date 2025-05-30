@@ -47,9 +47,11 @@
 #define CHG_BAT_TEMP_48     480
 #define CHG_BAT_TEMP_MAX    600
 
+#define BATT_FAST_CHG_CURR     6000
 #define CHG_BAT_CURR_2450MA     2450
 #define CHG_BAT_CURR_3920MA    3920
 #define CHG_BAT_CURR_4000MA     4000
+#define CHG_BAT_CURR_5000MA     5000
 #define CHG_BAT_CURR_5400MA     5400
 #define CHG_BAT_CURR_6000MA     6000
 
@@ -89,10 +91,9 @@ int is_pps_en;
 int switch_chg_ic;
 
 static int thermal_mitigation[] = {
-	6000000,5400000,5000000,4500000,4000000,3500000,3000000,2700000,
-	2500000,2300000,2100000,1800000,1500000,900000,800000,500000,300000,
+    6000000,5400000,5000000,4500000,4000000,4000000,4000000,4000000,
+    4000000,4000000,4000000,4000000,4000000,4000000,4000000,4000000,4000000,
 };
-
 enum cp_iio_type {
 	APDO,
 };
@@ -845,6 +846,7 @@ static int battery_sw_jeita(struct usbpd_pm *pdpm)
 
     if (pdpm->bat_temp >= CHG_BAT_TEMP_MIN && pdpm->bat_temp < CHG_BAT_TEMP_48) {
         pdpm->pps_temp_flag = 1;
+        jeita_curr = CHG_BAT_CURR_5000MA;
         if (pdpm->bat_temp <= CHG_BAT_TEMP_10)
             jeita_curr  = CHG_BAT_CURR_2450MA;
         else if (pdpm->bat_temp > CHG_BAT_TEMP_10 && pdpm->bat_temp <= CHG_BAT_TEMP_15)
@@ -864,7 +866,7 @@ static int battery_sw_jeita(struct usbpd_pm *pdpm)
             jeita_curr  = CHG_BAT_CURR_2450MA;
 
         if (pdpm->batt_auth != 1)
-            jeita_curr = 2000;
+            jeita_curr = 4000;
 
         if(pdpm->therm_curr < 2000)
             pdpm->pps_temp_flag = 0;

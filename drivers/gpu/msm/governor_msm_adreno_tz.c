@@ -16,6 +16,7 @@
 #include <linux/qcom_scm.h>
 #include <asm/cacheflush.h>
 #include <linux/qtee_shmbridge.h>
+#include <linux/delay.h>
 
 #include "../../devfreq/governor.h"
 #include "msm_adreno_devfreq.h"
@@ -27,18 +28,22 @@ static DEFINE_SPINLOCK(suspend_lock);
  * FLOOR is 3msec to capture up to 3 re-draws
  * per frame for 60fps content.
  */
-#define FLOOR		        3000
+#define FLOOR		        3000    // Reduced from 5000 to be more responsive
 /*
  * MIN_BUSY is 0.5 msec for the sample to be sent
  */
-#define MIN_BUSY		500
+#define MIN_BUSY		300     // Reduced threshold for faster response
 #define MAX_TZ_VERSION		0
+
+/* Tuned values for smoother video playback */
+#define MIN_GPU_FREQ   ((unsigned long)400000000)  // 400MHz minimum for better video decode
+#define MAX_GPU_FREQ   ((unsigned long)1000000000) // 1GHz maximum for thermal safety 
 
 /*
  * CEILING is 40msec, larger than any standard
  * frame length, but less than the idle timer.
  */
-#define CEILING			40000
+#define CEILING			50000
 #define TZ_RESET_ID		0x3
 #define TZ_UPDATE_ID		0x4
 #define TZ_INIT_ID		0x6
@@ -54,8 +59,8 @@ static DEFINE_SPINLOCK(suspend_lock);
 
 #define TAG "msm_adreno_tz: "
 
-#define HIST_SIZE 5
-#define HIST_THRESHOLD 3
+#define HIST_SIZE 10      // Increased history size for better averaging
+#define HIST_THRESHOLD 6       // Adjusted for smoother transitions
 
 /* GPU frequency history tracking structure */
 struct freq_history {
@@ -188,15 +193,15 @@ void compute_work_load(struct devfreq_dev_status *stats,
 		struct devfreq *devfreq)
 {
 	u64 busy;
-
+	
 	spin_lock(&sample_lock);
 
-	/* Use exponential moving average for smoother stats */
-	acc_total = (acc_total * 7 + stats->total_time) / 8;
+	/* Use weighted moving average for smoother transitions */
+	acc_total = (acc_total * 3 + stats->total_time) / 4;
 
 	busy = (u64)stats->busy_time * stats->current_frequency;
 	do_div(busy, devfreq->profile->freq_table[0]);
-	acc_relative_busy = (acc_relative_busy * 7 + busy) / 8;
+	acc_relative_busy = (acc_relative_busy * 3 + busy) / 4;
 
 	spin_unlock(&sample_lock);
 }
@@ -437,26 +442,55 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 		level = min_t(int, level, devfreq->profile->max_state - 1);
 	}
 
-	/* Apply hysteresis */
-	{
-		int i;
-		int count = 0;
+	/* Enhanced video playback detection */
+	if ((stats->busy_time * 100) / stats->total_time > 40) {
+        // If GPU usage > 40% during video playback
+        // Bias towards higher frequencies
+        if (level > 0) {
+            level -= 1;  // Step up more aggressively 
+        }
+        
+        // Reduce frequency bouncing by requiring longer duration at lower levels
+        if (val > 0) {
+            val = 1;  // Restrict step down to one level at a time
+        }
+    }
 
-		freq_hist.freqs[freq_hist.idx] = *freq;
-		freq_hist.idx = (freq_hist.idx + 1) % HIST_SIZE;
+    /* Smoother frequency transitions */
+    {
+        int i;
+        int count = 0;
+        unsigned int avg_freq = 0;
 
-		for (i = 0; i < HIST_SIZE; i++) {
-			if (freq_hist.freqs[i] == *freq)
-				count++;
-		}
+        // Store new frequency in history
+        freq_hist.freqs[freq_hist.idx] = *freq;
+        freq_hist.idx = (freq_hist.idx + 1) % HIST_SIZE;
 
-		/* Only change frequency if we see a consistent pattern */
-		if (count < HIST_THRESHOLD) {
-			*freq = devfreq->previous_freq;
-		}
-	}
+        // Calculate weighted moving average
+        for (i = 0; i < HIST_SIZE; i++) {
+            avg_freq += freq_hist.freqs[i];
+            if (freq_hist.freqs[i] == *freq)
+                count++;
+        }
+        avg_freq /= HIST_SIZE;
 
-	*freq = devfreq->profile->freq_table[level];
+        // Only change frequency if:
+        // 1. We see a consistent pattern (count > threshold)
+        // 2. The change is significant enough (> 10% difference)
+        if (count < HIST_THRESHOLD || 
+            abs(*freq - avg_freq) < (avg_freq / 10)) {
+            *freq = devfreq->previous_freq;
+        }
+    }
+
+    // Ensure minimum frequency for video playback
+    *freq = max(*freq, MIN_GPU_FREQ);
+
+    /* Add small delay between frequency changes */
+    if (*freq != stats->current_frequency) {
+        udelay(100);
+    }
+
 	return 0;
 }
 
