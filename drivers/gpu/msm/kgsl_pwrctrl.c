@@ -433,15 +433,21 @@ static ssize_t num_pwrlevels_show(struct device *dev,
 
 static int _get_nearest_pwrlevel(struct kgsl_pwrctrl *pwr, unsigned int clock)
 {
-	int i;
-
-	// Start from highest frequency for better performance
-	for (i = 0; i < pwr->num_pwrlevels; i++) {
-		if (pwr->pwrlevels[i].gpu_freq <= clock)
-			return i;
-	}
-
-	return pwr->num_pwrlevels - 1;
+    int i;
+    
+    // Start from highest frequency for more responsive ramping
+    for (i = 0; i < pwr->num_pwrlevels; i++) {
+        if (pwr->pwrlevels[i].gpu_freq <= clock) {
+            // Bias towards higher frequencies for smoother performance
+            // If within 20% of next level up, use the higher level
+            if (i > 0 && (clock - pwr->pwrlevels[i].gpu_freq) > 
+                (pwr->pwrlevels[i-1].gpu_freq * 20 / 100))
+                return i-1;
+            return i;
+        }
+    }
+    
+    return pwr->num_pwrlevels - 1;
 }
 
 static ssize_t max_gpuclk_store(struct device *dev,
@@ -1179,18 +1185,24 @@ int kgsl_pwrctrl_init_sysfs(struct kgsl_device *device)
  */
 void kgsl_pwrctrl_busy_time(struct kgsl_device *device, u64 time, u64 busy)
 {
-	struct kgsl_pwrctrl *pwr = &device->pwrctrl;
-	struct kgsl_clk_stats *stats = &pwr->clk_stats;
-
-	stats->busy_old = stats->busy;
-	stats->busy = busy;
-	stats->total_old = time;
-	stats->total = time;
-
-	/* Increase GPU frequency if running intensive 3D workloads */
-	if (busy > 75000000) { // Over 75% utilization 
-		kgsl_pwrscale_update(device);
-	}
+    struct kgsl_pwrctrl *pwr = &device->pwrctrl;
+    struct kgsl_clk_stats *stats = &pwr->clk_stats;
+    
+    stats->busy_old = stats->busy;
+    stats->busy = busy;
+    stats->total_old = stats->total;
+    stats->total = time;
+    
+    /* Enhanced frequency scaling for high GPU utilization */
+    if (busy > (time * 60 / 100)) { // Over 60% utilization
+        // Scale up more aggressively 
+        kgsl_pwrctrl_pwrlevel_change(device, 
+            max(0, pwr->active_pwrlevel - 2));
+            
+        // Disable timer-based frequency scaling temporarily
+        mod_timer(&device->idle_timer,
+            jiffies + msecs_to_jiffies(200));
+    }
 }
 
 static void kgsl_pwrctrl_clk(struct kgsl_device *device, int state,
@@ -2068,7 +2080,7 @@ _slumber(struct kgsl_device *device)
 		kgsl_pwrctrl_set_state(device, KGSL_STATE_SLUMBER);
 		break;
 	default:
-		kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
+				kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
 		break;
 
 	}
@@ -2084,12 +2096,6 @@ _slumber(struct kgsl_device *device)
 static int _suspend(struct kgsl_device *device)
 {
 	int ret = 0;
-
-	if ((device->state == KGSL_STATE_NONE) ||
-			(device->state == KGSL_STATE_INIT) ||
-			(device->state == KGSL_STATE_SUSPEND))
-		return ret;
-
 	/* drain to prevent from more commands being submitted */
 	device->ftbl->drain(device);
 	/* wait for active count so device can be put in slumber */

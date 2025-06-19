@@ -76,9 +76,13 @@
   *
   * (default: 6ms * (1 + ilog(ncpus)), units: nanoseconds)
   */
- unsigned int sysctl_sched_latency			= 6000000ULL;
- static unsigned int normalized_sysctl_sched_latency	= 6000000ULL;
- 
+
+ // --- Reduce scheduling latency sysctls for all tasks (default) ---
+ unsigned int sysctl_sched_latency = 4000000ULL; // 4ms default
+ static unsigned int normalized_sysctl_sched_latency = 4000000ULL;
+ unsigned int sysctl_sched_min_granularity = 500000ULL; // 0.5ms default
+ static unsigned int normalized_sysctl_sched_min_granularity = 500000ULL;
+
  /*
   * The initial- and re-scaling of tunables is configurable
   *
@@ -97,8 +101,6 @@
   *
   * (default: 0.75 msec * (1 + ilog(ncpus)), units: nanoseconds)
   */
- unsigned int sysctl_sched_min_granularity			= 750000ULL;
- static unsigned int normalized_sysctl_sched_min_granularity	= 750000ULL;
  
  /*
   * This value is kept at sysctl_sched_latency/sysctl_sched_min_granularity
@@ -297,7 +299,41 @@
  
  
  const struct sched_class fair_sched_class;
- 
+
+// --- Gaming thread detection ---
+static inline bool is_gaming_task(struct task_struct *p)
+{
+	// Detect by process name or cgroup (expand as needed)
+	if (!p)
+		return false;
+	if (strstr(p->comm, "pubg") || strstr(p->comm, "PUBG"))
+		return true;
+	// Add more games as needed
+	return false;
+}
+
+// --- Local implementation for interactive task detection ---
+static inline bool task_is_interactive(struct task_struct *p)
+{
+	// Heuristic: treat tasks with high priority as interactive
+	return (p && p->prio < DEFAULT_PRIO - 5);
+}
+
+// --- Reduce latency for interactive/gaming tasks ---
+static inline unsigned int get_sched_latency(struct task_struct *p)
+{
+	if (is_gaming_task(p) || task_is_interactive(p))
+		return 3000000ULL; // 3ms for gaming/interactive
+	return sysctl_sched_latency;
+}
+
+static inline unsigned int get_sched_min_granularity(struct task_struct *p)
+{
+	if (is_gaming_task(p) || task_is_interactive(p))
+		return 300000ULL; // 0.3ms for gaming/interactive
+	return sysctl_sched_min_granularity;
+}
+
  /**************************************************************
   * CFS operations on generic schedulable entities:
   */

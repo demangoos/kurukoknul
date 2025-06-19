@@ -276,11 +276,14 @@
  
  #define	FG_OP_STATUS_CHG_DISCHG		BIT(15) //if can use the charger information, plz use the charger information for CHG/DISCHG condition.
  
- #define MAX_CHARGE_POWER_W    67  // Increased from 33W to 67W
- #define REDUCED_CHARGE_CURRENT_MA 15000  // Increased from 10A to 15A
- #define HIGH_SOC_THRESHOLD    85  // Adjusted threshold from 80% to 85%
+ #define MAX_CHARGE_POWER_W    33  // Maximum charging power in watts
+ #define REDUCED_CHARGE_CURRENT_MA 10000  // Reduced charging current at 80% SOC in mA
+ #define HIGH_SOC_THRESHOLD    80  // SOC threshold to reduce charging current
  
  static unsigned int poll_interval = 10; /* 10 sec */
+ 
+ static void fg_refresh_status(struct sm_fg_chip *sm);
+ static int fg_recharge(struct sm_fg_chip *sm);
  
  static int fg_read_status(struct sm_fg_chip *sm)
  {
@@ -414,7 +417,6 @@
  {
 	 int uisoc;
 	 static int old_uisoc = 0;
-	 static int last_uisoc = -1;
 	 int rsoc = 0;
  
 	 rsoc = fg_read_soc(sm);
@@ -422,15 +424,6 @@
 	 if (uisoc >=100)
 		 uisoc = 100;
  
-	if(last_uisoc >= 0 && abs(uisoc - last_uisoc) > 1){
-		if(uisoc > last_uisoc)
-			uisoc = last_uisoc + 1;
-		else
-			uisoc = last_uisoc - 1;
-	}
-	last_uisoc = uisoc;
-
-
 	 if (old_uisoc != uisoc) {
 		 pr_info("rsoc = %d, uisoc = %d\n", rsoc, uisoc);
 		 old_uisoc = uisoc;
@@ -748,21 +741,21 @@
  }
  
  static int fg_get_cycle(struct sm_fg_chip *sm)
-  {
-	  int ret;
-	  int cycle;
-	  u16 data = 0;
-  
-	  ret = fg_read_word(sm, FG_REG_SOC_CYCLE, &data);
-	  if (ret<0) {
-		  pr_err("read cycle reg fail ret = %d\n", ret);
-		  cycle = 0;
-	  } else {
-		  cycle = data&0x01FF;
-	  }
-  
-	  return cycle;
-  }
+ {
+	 int ret;
+	 int cycle;
+	 u16 data = 0;
+ 
+	 ret = fg_read_word(sm, FG_REG_SOC_CYCLE, &data);
+	 if (ret<0) {
+		 pr_err("read cycle reg fail ret = %d\n", ret);
+		 cycle = 0;
+	 } else {
+		 cycle = data&0x01FF;
+	 }
+ 
+	 return cycle;
+ }
  
  static int fg_read_current(struct sm_fg_chip *sm)
  {
@@ -859,6 +852,26 @@
 	  }
 	  return ret;
   }
+ 
+ static int fg_read_fcc(struct sm_fg_chip *sm)
+ {
+	 int ret = 0;
+	 int fcc = 0;	
+	 u16 data = 0;
+	 int64_t temp = 0;
+ 
+	 ret = fg_read_word(sm, sm->regs[SM_FG_REG_BAT_CAP], &data);
+	 if (ret < 0) {
+		 pr_err("could not read FCC, ret=%d\n", ret);
+		 return ret;
+	 } else {
+		 /* */
+		 temp = div_s64((data & 0x7FFF) * 1000, 2048);
+		 fcc = temp;
+	 }
+ 
+	 return fcc;
+ }
  
  static int fg_read_rmc(struct sm_fg_chip *sm)
  {
@@ -1355,6 +1368,83 @@
  
  }
  
+ static void fg_refresh_status(struct sm_fg_chip *sm)
+ {
+	 bool last_batt_inserted;
+	 bool last_batt_fc;
+	 bool last_batt_ot;
+	 bool last_batt_ut;	
+	 static int last_soc, last_temp;
+ 
+	 last_batt_inserted	= sm->batt_present;
+	 last_batt_fc		= sm->batt_fc;
+	 last_batt_ot		= sm->batt_ot;
+	 last_batt_ut		= sm->batt_ut;
+ 
+	 fg_read_status(sm);
+ 
+	 if (!last_batt_inserted && sm->batt_present) {/* battery inserted */
+		 pr_info("Battery inserted\n");
+	 } else if (last_batt_inserted && !sm->batt_present) {/* battery removed */
+		 pr_info("Battery removed\n");
+		 sm->batt_soc	= -ENODATA;
+		 sm->batt_fcc	= -ENODATA;
+		 sm->batt_volt	= -ENODATA;
+		 sm->batt_curr	= -ENODATA;
+		 sm->batt_temp	= -ENODATA;
+		 sm->batt_rmc	= -ENODATA;
+	 }
+ 
+	 if ((last_batt_inserted != sm->batt_present)
+		 || (last_batt_fc != sm->batt_fc)
+		 || (last_batt_ot != sm->batt_ot)
+		 || (last_batt_ut != sm->batt_ut))
+		 power_supply_changed(sm->fg_psy);
+ 
+	 if (sm->batt_present) {	
+		 last_soc = sm->batt_soc;
+		 last_temp = sm->batt_temp;
+	 
+		 sm->batt_soc = fg_read_soc(sm);
+		 sm->batt_ocv = fg_read_ocv(sm);
+		 sm->batt_volt = fg_read_volt(sm);
+		 sm->batt_curr = fg_read_current(sm);
+		 sm->batt_soc_cycle = fg_get_cycle(sm);
+		 if (sm->en_temp_in)
+			 sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_IN);
+		 else if (sm->en_temp_ex)
+			 sm->batt_temp = fg_read_temperature(sm, TEMPERATURE_EX);
+		 else 
+			 sm->batt_temp = -ENODATA;
+		 sm->batt_rmc = fg_read_rmc(sm);
+		 fg_cal_carc(sm);
+		 
+		 pr_info("RSOC:%d, Volt:%d, Current:%d, Temperature:%d, OCV:%d, RMC:%d\n",
+			 sm->batt_soc, sm->batt_volt, sm->batt_curr, sm->batt_temp, sm->batt_ocv, sm->batt_rmc);
+			 
+ #ifdef SOC_SMOOTH_TRACKING		
+		 /* Update battery information */
+		 sm->param.batt_ma = sm->batt_curr;
+ #ifdef ENABLE_MAP_SOC
+		 sm->param.batt_raw_soc = (((sm->batt_soc*10+MAP_MAX_SOC)*100/MAP_RATE_SOC)-MAP_MIN_SOC);
+		 sm->param.batt_raw_soc = (sm->param.batt_raw_soc >=1000) ? 1000 : sm->param.batt_raw_soc;
+ #else
+		 sm->param.batt_raw_soc = sm->batt_soc;
+ #endif
+		 sm->soc_reporting_ready = 1;
+		 sm->param.batt_temp = sm->batt_temp;
+ 
+		 if (sm->soc_reporting_ready)
+			 fg_soc_smooth_tracking(sm);
+ #endif		
+	 }
+ 
+	 if (sm->fg_psy)
+		 power_supply_changed(sm->fg_psy);
+	 if (sm->batt_psy)
+		 power_supply_changed(sm->batt_psy);
+ }
+ 
  static int fg_recharge(struct sm_fg_chip *sm)
  {
 	 struct power_supply *psy;
@@ -1432,41 +1522,36 @@
  {
 	 struct sm_fg_chip *sm = container_of(work, struct sm_fg_chip,
 								 monitor_work.work);
-	 int batt_soc = 0;
-	 int batt_temp;
-	 int max_power;
+	 int batt_soc;
 	 union power_supply_propval val = {0,};
  
-	 // Get battery temperature
-	 batt_temp = fg_read_temperature(sm, TEMPERATURE_IN);
-	 batt_soc = fg_read_soc(sm);
+	 mutex_lock(&sm->data_lock);
+	 fg_init(sm->client);
+	 mutex_unlock(&sm->data_lock);
  
-	 // Dynamic power limit based on temperature
-	 max_power = MAX_CHARGE_POWER_W;
-	 if (batt_temp > 45) { // Above 45°C
-		 max_power = max_power * 70 / 100; // Reduce to 70%
-	 } else if (batt_temp > 40) { // Between 40-45°C
-		 max_power = max_power * 85 / 100; // Reduce to 85%
-	 }
+	 fg_refresh_status(sm);
+ 
+	 // Get current SOC
+	 batt_soc = fg_read_soc(sm) / 10; // Convert to percentage
+ 
+	 // Get charger power supply
+	 if (!sm->bq_psy)
+		 sm->bq_psy = power_supply_get_by_name("bq25890_charger");
  
 	 if (sm->bq_psy) {
-		 val.intval = max_power;
+		 // Set maximum charging power
+		 val.intval = MAX_CHARGE_POWER_W;
 		 power_supply_set_property(sm->bq_psy,
 				 POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT,
 				 &val);
  
-		 // Progressive current reduction based on SOC
-		 if (batt_soc >= 90) {
-			 val.intval = REDUCED_CHARGE_CURRENT_MA * 60 / 100;
-		 } else if (batt_soc >= HIGH_SOC_THRESHOLD) {
-			 val.intval = REDUCED_CHARGE_CURRENT_MA * 80 / 100;
-		 } else {
+		 // Reduce charging current if SOC >= 80%
+		 if (batt_soc >= HIGH_SOC_THRESHOLD) {
 			 val.intval = REDUCED_CHARGE_CURRENT_MA;
+			 power_supply_set_property(sm->bq_psy,
+					 POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
+					 &val);
 		 }
-		 
-		 power_supply_set_property(sm->bq_psy,
-				 POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
-				 &val);
 	 }
  
  #ifdef CONFIG_HQ_QGKI
@@ -1477,29 +1562,6 @@
 		 schedule_delayed_work(&sm->monitor_work, 
 							 msecs_to_jiffies(poll_interval * 1000));
 	 }
- }
- 
- static int fg_get_batt_present(struct sm_fg_chip *sm)
- {
-	 int ret;
-	 u16 data = 0;
-	 bool present;
- 
-	 ret = fg_read_word(sm, sm->regs[SM_FG_REG_STATUS], &data); 
-	 if (ret < 0) {
-		 pr_err("Failed to read BATT_PRESENT, ret=%d\n", ret);
-		 return ret;  
-	 }
- 
-	 present = !!(data & FG_STATUS_BATT_PRESENT);
-	 
-	 if (!present && (fg_read_volt(sm) > 2500)) {
-		 // Battery likely present but not detected
-		 present = true;
-		 pr_info("Battery voltage detected but presence bit not set\n");
-	 }
- 
-	 return present;
  }
  
  static int fg_get_property(struct power_supply *psy, enum power_supply_property psp,
@@ -1547,10 +1609,7 @@
 		 break;
 		 
 	 case POWER_SUPPLY_PROP_PRESENT:
-		 ret = fg_get_batt_present(sm);
-		 if (ret < 0)
-			 return ret;
-		 val->intval = ret;
+		 val->intval = sm->batt_present;
 		 break;
 		 
 	 case POWER_SUPPLY_PROP_CURRENT_NOW:
@@ -1819,7 +1878,7 @@
  
  static const struct power_supply_desc fg_power_supply_desc = {
 	 .name			= "sm5602_bat",
-	 .type			= POWER_SUPPLY_TYPE_BATTERY, // Changed from MAINS to BATTERY
+	 .type			= POWER_SUPPLY_TYPE_MAINS, /* POWER_SUPPLY_TYPE_BMS(kernel:4.19)  -> POWER_SUPPLY_TYPE_MAINS(kernel:5.4) */
 	 .get_property	= fg_get_property,
 	 .set_property	= fg_set_property,
 	 .properties		= fg_props,
@@ -3967,20 +4026,7 @@
  #endif
 	 INIT_DELAYED_WORK(&sm->monitor_work, fg_monitor_workfunc);	
  
-	 // Initialize battery presence detection first
-	 ret = fg_get_batt_present(sm);
-	 if (ret < 0) {
-		 pr_err("Failed to detect battery presence\n");
-		 goto err_0;
-	 }
-	 sm->batt_present = ret;
- 
-	 // Register power supply after confirming battery presence
-	 ret = fg_psy_register(sm);
-	 if (ret < 0) {
-		 pr_err("Failed to register power supply\n");
-		 goto err_0;
-	 }
+	 fg_psy_register(sm);
  
  #ifdef FG_ENABLE_IRQ
 	 if (sm->gpio_int > 0) {

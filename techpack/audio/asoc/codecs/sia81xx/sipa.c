@@ -908,6 +908,10 @@ int sipa_reg_init(
 			LOG_FLAG, __func__);
 	}
 
+	regmap_write(si_pa->regmap, 0x33,0x3f);
+	pr_info("[MANGOO BOOST] Boosted audio By Mangoos\n");
+
+
 	return 0;
 }
 

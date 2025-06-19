@@ -66,7 +66,7 @@
   * Number of tasks to iterate in a single balance run.
   * Limited because this is done with IRQs disabled.
   */
- const_debug unsigned int sysctl_sched_nr_migrate = 32;
+ const_debug unsigned int sysctl_sched_nr_migrate = 16;
  
  /*
   * period over which we measure -rt task CPU usage in us.
@@ -80,7 +80,7 @@
   * part of the period that we allow rt tasks to run in us.
   * default: 0.95s
   */
- int sysctl_sched_rt_runtime = 950000;
+ int sysctl_sched_rt_runtime = 980000;
  
  /*
   * __task_rq_lock - lock the rq @p resides on.
@@ -807,7 +807,7 @@
  static DEFINE_MUTEX(uclamp_mutex);
  
  /* Max allowed minimum utilization */
- unsigned int sysctl_sched_uclamp_util_min = SCHED_CAPACITY_SCALE;
+ unsigned int sysctl_sched_uclamp_util_min = SCHED_CAPACITY_SCALE * 0.6;
  
  /* Max allowed maximum utilization */
  unsigned int sysctl_sched_uclamp_util_max = SCHED_CAPACITY_SCALE;
@@ -2569,24 +2569,25 @@
  }
  
  void wake_up_if_idle(int cpu)
- {
-	 struct rq *rq = cpu_rq(cpu);
-	 struct rq_flags rf;
- 
-	 rcu_read_lock();
- 
-	 if (!is_idle_task(rcu_dereference(rq->curr)))
-		 goto out;
- 
-		 rq_lock_irqsave(rq, &rf);
-	  if (is_idle_task(rq->curr))
-		  resched_curr(rq);
-	  /* Else CPU is not idle, do nothing here: */
-	  rq_unlock_irqrestore(rq, &rf);
- 
-  out:
-	 rcu_read_unlock();
- }
+{
+	struct rq *rq = cpu_rq(cpu);
+	struct rq_flags rf;
+
+	rcu_read_lock();
+
+	if (!is_idle_task(rcu_dereference(rq->curr)))
+		goto out;
+
+	rq_lock_irqsave(rq, &rf);
+	if (is_idle_task(rq->curr))
+		resched_curr(rq);
+	/* Else CPU is not idle, do nothing here: */
+	rq_unlock_irqrestore(rq, &rf);
+
+out:
+	rcu_read_unlock();
+}
+
  
  bool cpus_share_cache(int this_cpu, int that_cpu)
  {

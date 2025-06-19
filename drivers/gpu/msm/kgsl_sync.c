@@ -80,6 +80,8 @@ static bool kgsl_sync_fence_has_signaled(struct dma_fence *fence)
 
 static bool kgsl_enable_signaling(struct dma_fence *fence)
 {
+	// If already signaled, don't wait; otherwise, enable signaling
+	cpu_relax(); // Hint to CPU for tight polling
 	return !kgsl_sync_fence_has_signaled(fence);
 }
 
@@ -359,9 +361,15 @@ static void kgsl_sync_timeline_signal(struct kgsl_sync_timeline *ktimeline,
 	if (timestamp_cmp(timestamp, ktimeline->last_timestamp) > 0)
 		ktimeline->last_timestamp = timestamp;
 
+	// Efficiently signal all fences that are ready
 	list_for_each_entry_safe(kfence, next, &ktimeline->child_list_head,
 				child_list) {
 		if (dma_fence_is_signaled_locked(&kfence->fence)) {
+			list_del_init(&kfence->child_list);
+			dma_fence_put(&kfence->fence);
+		} else if (timestamp_cmp(ktimeline->last_timestamp, kfence->timestamp) >= 0) {
+			// Signal fence immediately if timestamp reached
+			dma_fence_signal_locked(&kfence->fence);
 			list_del_init(&kfence->child_list);
 			dma_fence_put(&kfence->fence);
 		}
@@ -495,6 +503,7 @@ struct kgsl_sync_fence_cb *kgsl_sync_fence_async_wait(int fd,
 	kgsl_get_fence_names(fence, info_ptr);
 
 	/* if status then error or signaled */
+	// Use standard callback (no timeout available in mainline)
 	status = dma_fence_add_callback(fence, &kcb->fence_cb,
 				kgsl_sync_fence_callback);
 
