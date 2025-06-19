@@ -16,6 +16,7 @@
 
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
+#include <linux/ktime.h>
 
 #include <drm/drm_file.h>
 
@@ -62,6 +63,16 @@ static int refill_buf(struct msm_perf_state *perf)
 	char *ptr = perf->buf;
 	int rem = sizeof(perf->buf);
 	int i, n;
+
+	static ktime_t t_last_sample = 0;
+	ktime_t t_now = ktime_get();
+	long delta_us = 0;
+
+	if (t_last_sample) {
+		delta_us = ktime_to_us(ktime_sub(t_now, t_last_sample));
+		pr_info("[msm][perf] Perf sample interval: %ld us\n", delta_us);
+	}
+	t_last_sample = t_now;
 
 	if ((perf->cnt++ % 32) == 0) {
 		/* Header line: */

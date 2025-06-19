@@ -9,6 +9,7 @@
 #include <linux/kthread.h>
 #include <linux/uaccess.h>
 #include <uapi/linux/sched/types.h>
+#include <linux/ktime.h>
 
 #include <drm/drm_drv.h>
 #include <drm/drm_file.h>

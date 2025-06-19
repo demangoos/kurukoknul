@@ -534,10 +534,18 @@ static void _dpu_plane_setup_csc(struct dpu_plane *pdpu)
 		return;
 	}
 
-	if (BIT(DPU_SSPP_CSC_10BIT) & pdpu->features)
-		pdpu->csc_ptr = (struct dpu_csc_cfg *)&dpu_csc10_YUV2RGB_601L;
-	else
-		pdpu->csc_ptr = (struct dpu_csc_cfg *)&dpu_csc_YUV2RGB_601L;
+	if (BIT(DPU_SSPP_CSC_10BIT) & pdpu->features) {
+		/* Copy the CSC config and add green bias */
+		static struct dpu_csc_cfg csc10_green;
+		memcpy(&csc10_green, &dpu_csc10_YUV2RGB_601L, sizeof(csc10_green));
+		csc10_green.bias[1] += 0x40; // Add green bias (tweak as needed)
+		pdpu->csc_ptr = &csc10_green;
+	} else {
+		static struct dpu_csc_cfg csc8_green;
+		memcpy(&csc8_green, &dpu_csc_YUV2RGB_601L, sizeof(csc8_green));
+		csc8_green.bias[1] += 0x20; // Add green bias (tweak as needed)
+		pdpu->csc_ptr = &csc8_green;
+	}
 
 	DPU_DEBUG_PLANE(pdpu, "using 0x%X 0x%X 0x%X...\n",
 			pdpu->csc_ptr->csc_mv[0],

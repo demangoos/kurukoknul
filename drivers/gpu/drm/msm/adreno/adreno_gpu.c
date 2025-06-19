@@ -14,6 +14,7 @@
 #include <linux/pm_opp.h>
 #include <linux/slab.h>
 #include <linux/soc/qcom/mdt_loader.h>
+#include <linux/ktime.h>
 #include "adreno_gpu.h"
 #include "msm_gem.h"
 #include "msm_mmu.h"
@@ -395,6 +396,11 @@ void adreno_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 	struct msm_drm_private *priv = gpu->dev->dev_private;
 	struct msm_ringbuffer *ring = submit->ring;
 	unsigned i;
+	ktime_t t_submit, t_flush;
+	static ktime_t t_last_flush = 0;
+	long delta_us = 0;
+
+	t_submit = ktime_get();
 
 	for (i = 0; i < submit->nr_cmds; i++) {
 		switch (submit->cmd[i].type) {
@@ -457,13 +463,31 @@ void adreno_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
 	}
 #endif
 
-	gpu->funcs->flush(gpu, ring);
+	// Optional: force flush if pending commands too many
+	if ((ring->next - ring->start) > MSM_RINGBUFFER_PENDING_THRESHOLD) {
+		pr_info("[adreno][perf] Force flush: pending commands=%ld\n",
+			(long)(ring->next - ring->start));
+		adreno_flush(gpu, ring);
+		t_last_flush = ktime_get();
+	}
+
+	// Log before flush
+	pr_info("[adreno][perf] Submit seqno=%u at %lld ns\n",
+		submit->seqno, ktime_to_ns(t_submit));
+
+	adreno_flush(gpu, ring);
+
+	t_flush = ktime_get();
+	delta_us = ktime_to_us(ktime_sub(t_flush, t_submit));
+	pr_info("[adreno][perf] Flush after submit seqno=%u, latency=%ld us\n",
+		submit->seqno, delta_us);
 }
 
 void adreno_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	uint32_t wptr;
+	ktime_t t_flush = ktime_get();
 
 	/* Copy the shadow to the actual register */
 	ring->cur = ring->next;
@@ -479,6 +503,9 @@ void adreno_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 	mb();
 
 	adreno_gpu_write(adreno_gpu, REG_ADRENO_CP_RB_WPTR, wptr);
+
+	pr_info("[adreno][perf] Ringbuffer flush at %lld ns (ring id=%d)\n",
+		ktime_to_ns(t_flush), ring->id);
 }
 
 bool adreno_idle(struct msm_gpu *gpu, struct msm_ringbuffer *ring)

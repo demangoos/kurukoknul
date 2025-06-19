@@ -7,6 +7,7 @@
  */
 
 #include "adreno_gpu.h"
+#include <linux/ktime.h>
 
 #define ANY_ID 0xff
 
@@ -229,6 +230,8 @@ struct msm_gpu *adreno_load_gpu(struct drm_device *dev)
 	 * otherwise
 	 */
 
+	ktime_t t_start = ktime_get();
+
 	ret = adreno_load_fw(adreno_gpu);
 	if (ret)
 		return NULL;
@@ -254,6 +257,9 @@ struct msm_gpu *adreno_load_gpu(struct drm_device *dev)
 		DRM_DEV_ERROR(dev->dev, "gpu hw init failed: %d\n", ret);
 		return NULL;
 	}
+	ktime_t t_end = ktime_get();
+	pr_info("[adreno][perf] GPU load+init done in %lld us\n",
+		ktime_to_us(ktime_sub(t_end, t_start)));
 
 #ifdef CONFIG_DEBUG_FS
 	if (gpu->funcs->debugfs_init) {
